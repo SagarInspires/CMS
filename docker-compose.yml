@@ -1,0 +1,16 @@
+name: editorialflow-development
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-editorialflow}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-securepassword}
+      POSTGRES_DB: ${POSTGRES_DB:-editorialflow_db}
+    ports:
+      - "5433:5432"
+    volumes:
+      - development_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  development_postgres_data:

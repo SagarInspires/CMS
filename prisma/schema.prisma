@@ -1,0 +1,175 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  AUTHOR
+  EDITOR
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  LOCKED
+}
+
+enum ArticleStatus {
+  DRAFT
+  IN_REVIEW
+  CHANGES_REQUESTED
+  REJECTED
+  APPROVED
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(AUTHOR)
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  articles          Article[]
+  refreshSessions   RefreshSession[]
+  comments          EditorialComment[]
+  auditLogs         AuditLog[]
+  resetTokens       PasswordResetToken[]
+}
+
+model RefreshSession {
+  id           String   @id @default(uuid())
+  userId       String
+  refreshToken String   @unique // Hashed
+  userAgent    String?
+  ipAddress    String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PasswordResetToken {
+  id        String   @id @default(uuid())
+  userId    String
+  token     String   @unique // Hashed
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Article {
+  id              String        @id @default(uuid())
+  title           String
+  slug            String        @unique
+  excerpt         String?
+  contentJson     Json
+  sanitizedHtml   String
+  featuredImageUrl String?
+  status          ArticleStatus @default(DRAFT)
+  version         Int           @default(1)
+  
+  seoTitle        String?
+  seoDescription  String?
+
+  authorId        String
+  categoryId      String?
+
+  scheduledAt     DateTime?
+  publishedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+
+  author          User          @relation(fields: [authorId], references: [id])
+  category        Category?     @relation(fields: [categoryId], references: [id])
+  tags            ArticleTag[]
+  revisions       ArticleRevision[]
+  comments        EditorialComment[]
+
+  @@index([status, publishedAt, deletedAt])
+  @@index([categoryId])
+  @@index([authorId])
+}
+
+model ArticleRevision {
+  id            String   @id @default(uuid())
+  articleId     String
+  version       Int
+  title         String
+  contentJson   Json
+  createdAt     DateTime @default(now())
+
+  article       Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  slug        String    @unique
+  description String?
+  createdAt   DateTime  @default(now())
+  
+  articles    Article[]
+}
+
+model Tag {
+  id        String       @id @default(uuid())
+  name      String
+  slug      String       @unique
+  createdAt DateTime     @default(now())
+
+  articles  ArticleTag[]
+}
+
+model ArticleTag {
+  articleId String
+  tagId     String
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  tag     Tag     @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([articleId, tagId])
+}
+
+enum CommentVisibility {
+  PUBLIC_TO_AUTHOR
+  INTERNAL
+}
+
+model EditorialComment {
+  id         String            @id @default(uuid())
+  articleId  String
+  userId     String
+  content    String
+  visibility CommentVisibility @default(PUBLIC_TO_AUTHOR)
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+
+  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  actorId     String?
+  action      String
+  entityType  String
+  entityId    String
+  metadata    Json?
+  ipAddress   String?
+  createdAt   DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id], onDelete: SetNull)
+}

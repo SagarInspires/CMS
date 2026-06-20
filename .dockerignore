@@ -1,0 +1,14 @@
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+.env*
+tests/
+test-results/
+playwright-report/
+playwright.config.ts
+vitest.config.ts
+next-env.d.ts
