@@ -1,12 +1,13 @@
 # EditorialFlow CMS
 
-A production-grade, API-first editorial Content Management System built with Next.js 15, TypeScript, Tailwind, and Prisma.
+A production-grade, API-first editorial Content Management System built with Next.js 16.2.9, React 19, TypeScript, Tailwind, and Prisma.
 
 ## Project Overview
-EditorialFlow is a robust, security-first headless CMS designed specifically for rigorous editorial teams. It enforces a strict state-machine workflow to ensure content is properly reviewed before publication.
+EditorialFlow is a robust, security-first CMS designed specifically for rigorous editorial teams. It enforces a strict state-machine workflow to ensure content is properly reviewed before publication, and provides a full management dashboard as well as a public-facing portal.
 
 ## Technology Stack
-- **Framework:** Next.js 15 (App Router, React Server Components)
+- **Framework:** Next.js 16.2.9 (App Router, React Server Components)
+- **UI:** React 19
 - **Language:** TypeScript
 - **Database ORM:** Prisma
 - **Database:** PostgreSQL 15
@@ -35,10 +36,6 @@ EditorialFlow is a robust, security-first headless CMS designed specifically for
 5. **Published:** Article goes live (handled by cron or manual action).
 6. **Rejected:** Editor rejects with notes; returns to Author for revision.
 
-## Screenshots
-*(Insert screenshot of dashboard here)*
-*(Insert screenshot of article editor here)*
-
 ## Environment Setup
 Copy `.env.example` to `.env` for local development. For production, copy `.env.production.example` to `.env.production` and fill in secure random values. **Never commit `.env` or `.env.production` to version control.**
 
@@ -50,13 +47,13 @@ Copy `.env.example` to `.env` for local development. For production, copy `.env.
 
 2. **Start Development Database:**
    ```bash
-   docker compose up -d postgres
+   pnpm db:dev:up
    ```
 
 ## Database Migration
 Apply the schema to your database:
 ```bash
-npx prisma migrate dev
+pnpm db:migrate
 ```
 
 ## Seed Instructions (Development Only)
@@ -71,11 +68,11 @@ pnpm db:seed
 
 ## Test Commands
 ```bash
-# Install Playwright dependencies
-npx playwright install --with-deps
+# Run unit tests
+pnpm test
 
-# Run full E2E suite
-npx playwright test
+# Run full Playwright E2E suite
+pnpm test:e2e
 ```
 
 ## Docker Production Setup

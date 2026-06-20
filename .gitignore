@@ -8,6 +8,7 @@ playwright-report/
 test-results/
 coverage/
 *.log
+error-dump-*.html
 public/uploads/*
 !public/uploads/.gitkeep
 tsconfig.tsbuildinfo
