@@ -60,10 +60,13 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Run Prisma Generation
-        run: npx prisma generate
+        run: pnpm db:generate
 
       - name: Apply Database Migrations
-        run: npx prisma migrate deploy
+        run: pnpm db:migrate
+
+      - name: Seed Database for E2E Tests
+        run: pnpm db:seed
 
       - name: Typecheck
         run: pnpm tsc --noEmit
