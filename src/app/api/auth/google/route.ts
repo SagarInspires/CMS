@@ -106,7 +106,8 @@ export async function POST(req: NextRequest) {
     }
 
     // Success, redirect to dashboard
-    return NextResponse.redirect(new URL('/dashboard', req.url), 303);
+    const baseUrl = process.env.APP_URL || req.url;
+    return NextResponse.redirect(new URL('/dashboard', baseUrl), 303);
 
   } catch (error: any) {
     console.error('Google callback error:', error);
@@ -114,7 +115,8 @@ export async function POST(req: NextRequest) {
   }
 
   function redirectWithError(errorMsg: string) {
-    const url = new URL('/login', req.url);
+    const baseUrl = process.env.APP_URL || req.url;
+    const url = new URL('/login', baseUrl);
     url.searchParams.set('error', errorMsg);
     return NextResponse.redirect(url, 303);
   }
