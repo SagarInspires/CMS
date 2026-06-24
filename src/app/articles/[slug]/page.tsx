@@ -33,49 +33,70 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card">
-        <div className="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-black tracking-tighter text-primary">EditorialFlow</Link>
-          <Link href="/articles" className="text-sm font-medium hover:text-primary transition-colors">All Articles</Link>
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/20">
+      <header className="border-b border-border/60 bg-background/95 backdrop-blur sticky top-0 z-40">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-8 h-14 flex items-center justify-between">
+          <Link href="/" className="text-xl font-serif font-semibold tracking-tight hover:text-primary transition-colors">
+            EditorialFlow.
+          </Link>
+          <div className="flex gap-6">
+            <Link href="/articles" className="text-sm font-medium hover:text-primary transition-colors">Archive</Link>
+          </div>
         </div>
       </header>
 
-      <main className="max-w-3xl mx-auto px-6 py-16">
+      <main className="max-w-[700px] mx-auto px-4 sm:px-6 py-16 md:py-24">
         <article>
-          <header className="mb-12 text-center">
-            {article.category && (
-              <Link href={`/categories/${article.category.slug}`} className="text-xs font-bold text-primary uppercase tracking-widest mb-6 inline-block hover:underline">
-                {article.category.name}
-              </Link>
-            )}
-            <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-6 leading-tight">
+          <header className="mb-16">
+            <div className="flex items-center gap-3 mb-8">
+              <time dateTime={article.publishedAt?.toISOString()} className="text-xs font-medium text-muted-foreground uppercase tracking-widest">
+                {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : 'Draft'}
+              </time>
+              {article.category && (
+                <>
+                  <span className="text-muted-foreground/30">•</span>
+                  <Link href={`/categories/${article.category.slug}`} className="text-xs font-bold text-primary uppercase tracking-[0.15em] hover:text-primary/80 transition-colors">
+                    {article.category.name}
+                  </Link>
+                </>
+              )}
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-serif font-bold tracking-tight mb-8 leading-[1.1] text-foreground">
               {article.title}
             </h1>
             
-            <div className="flex items-center justify-center gap-4 text-sm font-medium text-muted-foreground border-t border-b py-4 my-8">
-              <Link href={`/authors/${article.author.id}`} className="hover:text-primary transition-colors">
-                By {article.author.name}
-              </Link>
-              <span>•</span>
-              <time dateTime={article.publishedAt?.toISOString()}>
-                {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''}
-              </time>
+            <div className="flex items-center gap-4 py-6 border-y border-border/50">
+              <div className="w-12 h-12 rounded-full bg-secondary border border-border flex items-center justify-center text-secondary-foreground font-serif text-lg">
+                {article.author.name.charAt(0)}
+              </div>
+              <div>
+                <Link href={`/authors/${article.author.id}`} className="font-medium text-foreground hover:underline underline-offset-4">
+                  {article.author.name}
+                </Link>
+                <p className="text-sm text-muted-foreground">Editor</p>
+              </div>
             </div>
           </header>
 
+          {/* Prose body using Tailwind Typography, tweaked for editorial */}
           <div 
-            className="prose prose-lg dark:prose-invert max-w-none prose-headings:font-bold prose-a:text-primary prose-img:rounded-xl"
+            className="prose prose-lg dark:prose-invert max-w-none 
+                       prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight
+                       prose-p:font-serif prose-p:leading-relaxed prose-p:text-foreground/90
+                       prose-a:text-primary prose-a:underline-offset-4 prose-a:decoration-primary/30 hover:prose-a:decoration-primary
+                       prose-img:rounded-sm prose-img:border prose-img:border-border/50
+                       prose-blockquote:font-serif prose-blockquote:font-style-italic prose-blockquote:border-l-primary prose-blockquote:text-muted-foreground"
             dangerouslySetInnerHTML={{ __html: article.sanitizedHtml || '' }} 
           />
 
           {article.tags.length > 0 && (
-            <div className="mt-16 pt-8 border-t">
-              <h3 className="text-sm font-bold uppercase tracking-wider mb-4">Tags</h3>
+            <div className="mt-20 pt-8 border-t border-border/50">
+              <h3 className="text-xs font-bold uppercase tracking-[0.15em] text-muted-foreground mb-4">Tags</h3>
               <div className="flex flex-wrap gap-2">
                 {article.tags.map(({ tag }) => (
-                  <Link key={tag.id} href={`/tags/${tag.slug}`} className="bg-muted px-3 py-1 rounded-full text-sm hover:bg-primary/10 hover:text-primary transition-colors">
-                    #{tag.name}
+                  <Link key={tag.id} href={`/tags/${tag.slug}`} className="border border-border bg-secondary/30 px-3 py-1 text-sm font-medium hover:border-primary hover:text-primary transition-colors">
+                    {tag.name}
                   </Link>
                 ))}
               </div>
@@ -84,8 +105,10 @@ export default async function ArticleDetailPage({ params }: { params: Promise<{ 
         </article>
       </main>
       
-      <footer className="bg-muted/30 border-t py-12 mt-12 text-center">
-        <p className="text-muted-foreground text-sm">© {new Date().getFullYear()} EditorialFlow</p>
+      <footer className="border-t border-border bg-background mt-auto py-12">
+        <div className="max-w-screen-2xl mx-auto px-4 md:px-8 text-center text-muted-foreground text-sm font-medium">
+          © {new Date().getFullYear()} EditorialFlow. All rights reserved.
+        </div>
       </footer>
     </div>
   );

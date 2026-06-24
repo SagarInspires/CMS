@@ -36,7 +36,8 @@ export async function transitionArticle(prevState: any, formData: FormData) {
 
   const data = parsed.data;
 
-  if (!hasPermission(session.role, 'article:review')) {
+  // We check permissions per action below, but we must verify they have at least submit access
+  if (!hasPermission(session.role, 'article:submit')) {
     return { success: false, error: 'Forbidden', status: 403 };
   }
 
@@ -56,6 +57,11 @@ export async function transitionArticle(prevState: any, formData: FormData) {
         return { success: false, error: 'Conflict: The article was modified by another user. Please refresh.', status: 409 };
       }
 
+      // If the user is an author and not an admin/editor, they can only act on THEIR OWN articles
+      if (session.role === 'AUTHOR' && article.authorId !== session.userId) {
+        return { success: false, error: 'Forbidden: You do not own this article.', status: 403 };
+      }
+
       let newStatus: ArticleStatus = article.status;
       let newPublishedAt = article.publishedAt;
       let newScheduledAt = article.scheduledAt;
@@ -69,18 +75,21 @@ export async function transitionArticle(prevState: any, formData: FormData) {
             break;
           case 'REQUEST_CHANGES':
             if (article.status !== ArticleStatus.IN_REVIEW) throw new Error('Invalid state for REQUEST_CHANGES');
+            if (!hasPermission(session.role, 'article:review')) throw new Error('Forbidden');
             if (!data.reason) throw new Error('Reason required for requesting changes');
             newStatus = ArticleStatus.CHANGES_REQUESTED;
             commentVisibility = CommentVisibility.PUBLIC_TO_AUTHOR;
             break;
           case 'REJECT':
             if (!['IN_REVIEW', 'DRAFT', 'CHANGES_REQUESTED'].includes(article.status)) throw new Error('Invalid state for REJECT');
+            if (!hasPermission(session.role, 'article:review')) throw new Error('Forbidden');
             if (!data.reason) throw new Error('Reason required for rejection');
             newStatus = ArticleStatus.REJECTED;
             commentVisibility = CommentVisibility.PUBLIC_TO_AUTHOR;
             break;
           case 'APPROVE':
             if (article.status !== ArticleStatus.IN_REVIEW) throw new Error('Invalid state for APPROVE');
+            if (!hasPermission(session.role, 'article:review')) throw new Error('Forbidden');
             newStatus = ArticleStatus.APPROVED;
             commentVisibility = CommentVisibility.INTERNAL;
             break;

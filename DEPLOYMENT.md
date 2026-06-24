@@ -1,6 +1,42 @@
 # EditorialFlow Production Deployment Guide
 
-This guide outlines the procedure for deploying EditorialFlow using the bundled Docker Compose setup, including security considerations, reverse proxy requirements, and environment configuration.
+This guide outlines the procedure for deploying EditorialFlow. We strongly recommend **Vercel** for seamless deployment, but also provide a bundled Docker Compose setup for self-hosting.
+
+## Option A: Vercel Deployment (Recommended)
+
+1. **Create Postgres Database**
+   Provision a Vercel Postgres or Supabase database.
+2. **Configure Pooled `DATABASE_URL`**
+   Ensure your connection string uses connection pooling (e.g., append `?pgbouncer=true` if using Supabase, or use the direct pooled URL provided by Vercel).
+3. **Configure `DIRECT_URL`**
+   If required by your Prisma provider for migrations, set the `DIRECT_URL` to the non-pooled connection string.
+4. **Add Vercel Environment Variables**
+   Add all necessary variables from `.env.production.example` to your Vercel project settings, specifically including `APP_URL`, `JWT_SECRET`, `CRON_SECRET`, and database URLs.
+5. **Configure Google Cloud OAuth Origins**
+   In your Google Cloud Console:
+   - Add your deployed `APP_URL` to the **Authorized JavaScript origins**.
+   - Add any callback/redirect routes if used.
+6. **Configure Resend Domain/Sender**
+   Set `RESEND_API_KEY` and `EMAIL_FROM` with a verified domain.
+7. **Configure Vercel Blob**
+   Set `STORAGE_PROVIDER=vercel-blob` and provide the `BLOB_READ_WRITE_TOKEN`.
+8. **Apply Prisma Migrations Safely**
+   Add a build step or run `npx prisma migrate deploy` to safely apply the schema to your production database.
+9. **Deploy**
+   Trigger a Vercel deployment.
+10. **Validate**
+    After deployment, test the following flows:
+    - `/api/health`
+    - Register / Email Verification
+    - Google Login
+    - Image Upload
+    - Article Publish
+    - Revision Preview
+    - Comments / Revisions / Autosave
+
+---
+
+## Option B: Docker Compose Deployment (Self-Hosted)
 
 ## Prerequisites
 

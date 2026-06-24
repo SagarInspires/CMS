@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { ArticleStatus } from '@prisma/client';
 
+import crypto from 'crypto';
+
 function getCronSecret(): string {
   const secret = process.env.CRON_SECRET;
   if (!secret) {
@@ -21,7 +23,16 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 
-  if (authHeader !== `Bearer ${expectedSecret}`) {
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const token = authHeader.split(' ')[1];
+  
+  if (
+    token.length !== expectedSecret.length ||
+    !crypto.timingSafeEqual(Buffer.from(token), Buffer.from(expectedSecret))
+  ) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 

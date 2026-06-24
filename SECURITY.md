@@ -1,17 +1,19 @@
-# Security Overview
+# Security Configuration
 
-EditorialFlow implements a defense-in-depth security strategy designed to protect editorial integrity and user data.
+## Authentication
+- **Password**: Hashed using Argon2id.
+- **Google Sign-In**: Uses Google Identity Services. Server verifies cryptographic signature of the ID Token. CSRF is mitigated via Double-Submit cookie validation.
+- **Sessions**: JWTs stored in HttpOnly, Secure, SameSite=Lax cookies.
 
-## Authentication & Authorization
-- **Passwords:** Hashed using Argon2id with dynamically generated salts.
-- **Sessions:** Stateless JWTs signed with a strong `JWT_SECRET`. Stored exclusively in HttpOnly, Secure, SameSite=Strict cookies to mitigate XSS and CSRF.
-- **RBAC:** Strict Server-Side validation on every route and Server Action. UI hiding is only a visual aid; the backend verifies the user's role and ownership of the resource before any mutation.
-
-## Content Security
-- **Isomorphic HTML Sanitization:** Rich text from the TipTap editor is sanitized on the server using `DOMPurify` backed by `JSDOM`. Malicious payloads (e.g., `<script>`, `javascript:`) are aggressively stripped before reaching the database or the client.
-- **Output Encoding:** React automatically escapes string bindings.
-- **File Uploads:** Uploaded images are strictly validated against allowed MIME types and magic bytes. Extensions are sanitized and names are randomized to prevent path traversal and arbitrary code execution.
-
-## Dependency Management
-- Lockfiles (`pnpm-lock.yaml`) ensure deterministic builds.
-- Critical libraries (Argon2, Prisma, DOMPurify) are pinned and regularly audited.
+## Google Cloud Configuration
+Manual Google Cloud Configuration instructions:
+1. Create/select a Google Cloud project.
+2. Configure OAuth consent screen.
+3. Choose External user type for public users.
+4. Add only `openid`, `email`, `profile` scopes.
+5. Create Web application OAuth Client ID.
+6. Add authorized local origin: `http://localhost:3000`
+7. Add exact staging HTTPS origin later.
+8. Configure exact callback/login URI used by the application (`/api/auth/google`).
+9. Add test users while consent screen remains in testing mode.
+10. Configure branding/homepage/privacy-policy URLs for production.

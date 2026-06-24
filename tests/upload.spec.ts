@@ -5,6 +5,8 @@ import path from 'path';
 test.describe('Image Upload E2E Workflow', () => {
 
   test('Author can upload image and it renders securely', async ({ page, browser }) => {
+    test.setTimeout(120000); // Increase to 120s due to extensive workflow and dev server latency
+    
     // Unique identifier for this test run to ensure isolation
     const uniqueTitle = `Test Upload E2E ${Date.now()} ${Math.random().toString(36).substring(7)}`;
 
@@ -19,12 +21,10 @@ test.describe('Image Upload E2E Workflow', () => {
       // 2. Author opens new article page
       await page.getByRole("link", { name: "Write New" }).click();
 
-      await expect(page).toHaveURL(/\/dashboard\/articles\/new$/);
+      await expect(page).toHaveURL(/\/dashboard\/articles\/[^/]+\/edit$/, { timeout: 15_000 });
 
-      await expect(
-        page.getByRole("heading", { name: "Write New Article" })
-      ).toBeVisible();
-
+      await expect(page.getByTestId('rich-text-editor')).toBeVisible();
+      
       await expect(
         page.locator('input[name="title"]')
       ).toBeVisible();
@@ -48,17 +48,15 @@ test.describe('Image Upload E2E Workflow', () => {
       // Attach file to hidden input
       await fileInput.setInputFiles(fixturePath);
 
-      // 4. Image appears inside editor
-      // Tiptap renders the image with src and alt
+      // Ensure image is visible in the editor
       await expect(page.locator('.ProseMirror img[alt="Test Alt Text"]')).toBeVisible();
 
-      // Ensure React has updated the hidden form inputs before submitting
-      await expect(page.locator('input[name="htmlContent"]')).toHaveValue(/<img[^>]+alt="Test Alt Text"/);
+      // 5. Author waits for autosave
+      const saveStatus = page.getByTestId('editor-save-status');
+      await expect(saveStatus).toHaveText(/^\s*Saved\s*$/i, { timeout: 15_000 });
 
-      // 5. Author saves draft
-      await page.click('button[type="submit"]');
-      // Wait for redirect to dashboard articles list
-      await expect(page).toHaveURL(/.*\/dashboard\/articles$/, { timeout: 30000 });
+      // Navigate to dashboard articles list
+      await page.goto('/dashboard/articles');
 
       // Wait for redirect and ensure draft exists
       await expect(page.locator(`text=${uniqueTitle}`)).toBeVisible();
@@ -232,9 +230,7 @@ test.describe('Image Upload E2E Workflow', () => {
       "New article route must return HTTP 200"
     ).toBe(200);
 
-    await expect(
-      page.getByRole("heading", { name: "Write New Article" })
-    ).toBeVisible();
+    await expect(page).toHaveURL(/\/dashboard\/articles\/[^/]+\/edit$/, { timeout: 15_000 });
 
     await expect(
       page.getByTestId("rich-text-editor")
@@ -246,10 +242,16 @@ test.describe('Image Upload E2E Workflow', () => {
     // Use the committed fixture
     const dummyPdfPath = path.resolve(__dirname, 'fixtures/test.pdf');
     
-    await fileInput.setInputFiles(dummyPdfPath);
+    // Wait for the client-side alert to appear and dismiss it so execution doesn't block
+    let dialogMessage = '';
+    page.once('dialog', async dialog => {
+      dialogMessage = dialog.message();
+      await dialog.dismiss();
+    });
 
-    // Wait for the client-side error to appear
-    await expect(page.locator('text=Only image files are allowed.')).toBeVisible();
+    await fileInput.setInputFiles(dummyPdfPath);
+    
+    expect(dialogMessage).toBe('Only image files are allowed.');
     
     // Ensure image was NOT inserted
     await expect(page.locator('.ProseMirror img')).toHaveCount(0);

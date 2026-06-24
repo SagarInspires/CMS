@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma';
 import { verifySession } from '@/lib/auth/session';
+import { hasPermission } from '@/lib/auth/rbac';
 import { sanitizeHtml } from '@/lib/sanitizer';
 import { ArticleStatus } from '@prisma/client';
 import { revalidatePath } from 'next/cache';
@@ -9,7 +10,7 @@ import { redirect } from 'next/navigation';
 
 export async function createArticle(prevState: any, formData: FormData) {
   const session = await verifySession();
-  if (!session) throw new Error('Unauthorized');
+  if (!session || !hasPermission(session.role, 'article:create')) throw new Error('Unauthorized');
 
   const title = formData.get('title') as string;
   const content = formData.get('content') as string;
@@ -60,4 +61,26 @@ export async function createArticle(prevState: any, formData: FormData) {
 
   revalidatePath('/dashboard/articles');
   redirect(`/dashboard/articles`); // Redirect to articles list to see drafts
+}
+
+export async function createBlankDraft() {
+  const session = await verifySession();
+  if (!session || !hasPermission(session.role, 'article:create')) throw new Error('Unauthorized');
+
+  const title = 'Untitled Draft';
+  const slug = `untitled-draft-${Date.now()}`;
+  
+  const article = await prisma.article.create({
+    data: {
+      title,
+      slug,
+      contentJson: { type: 'doc', content: [{ type: 'paragraph' }] },
+      sanitizedHtml: '<p></p>',
+      status: ArticleStatus.DRAFT,
+      authorId: session.userId,
+      version: 1,
+    }
+  });
+
+  return redirect(`/dashboard/articles/${article.id}/edit`);
 }

@@ -9,6 +9,8 @@ FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
 COPY prisma ./prisma
+ENV npm_config_fetch_timeout=600000
+ENV npm_config_fetch_retries=5
 RUN pnpm install --frozen-lockfile --ignore-scripts=false
 
 FROM base AS builder
@@ -17,6 +19,10 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV STORAGE_PROVIDER="local"
+ENV APP_URL="http://localhost:3000"
+ENV UPSTASH_REDIS_REST_URL="https://dummy.upstash.io"
+ENV UPSTASH_REDIS_REST_TOKEN="dummy_token"
 RUN pnpm prisma generate
 RUN pnpm build
 

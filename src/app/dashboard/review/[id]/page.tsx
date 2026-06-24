@@ -3,14 +3,26 @@ import { prisma } from '@/lib/prisma';
 import { hasPermission } from '@/lib/auth/rbac';
 import { notFound, redirect } from 'next/navigation';
 import { ReviewActionsForm } from './ReviewActionsForm';
+import Link from 'next/link';
+import { sanitizeHtml } from '@/lib/sanitizer';
+import { generateHTML } from '@tiptap/html';
+import { sharedEditorExtensions } from '@/lib/editor/extensions';
 
-export default async function ReviewDetailPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ReviewDetailPage({ 
+  params,
+  searchParams
+}: { 
+  params: Promise<{ id: string }>;
+  searchParams: Promise<{ rev?: string }>;
+}) {
   const session = await verifySession();
-  if (!session || (!hasPermission(session.role, 'article:review') && !hasPermission(session.role, 'article:publish'))) {
-    notFound();
+  if (!session) {
+    redirect('/login');
   }
 
   const { id } = await params;
+  const resolvedSearchParams = await searchParams;
+  const revisionId = resolvedSearchParams?.rev;
 
   const article = await prisma.article.findUnique({
     where: { id },
@@ -25,6 +37,15 @@ export default async function ReviewDetailPage({ params }: { params: Promise<{ i
 
   if (!article) notFound();
 
+  // Access Control: Must be the author, or have review/publish permissions
+  const isAuthor = article.authorId === session.userId;
+  const canReview = hasPermission(session.role, 'article:review');
+  const canPublish = hasPermission(session.role, 'article:publish');
+
+  if (!isAuthor && !canReview && !canPublish) {
+    notFound(); // or redirect
+  }
+
   const auditLogs = await prisma.auditLog.findMany({
     where: { entityType: 'Article', entityId: article.id },
     include: { actor: { select: { name: true } } },
@@ -32,15 +53,40 @@ export default async function ReviewDetailPage({ params }: { params: Promise<{ i
     take: 10
   });
 
-  const words = article.sanitizedHtml.replace(/<[^>]+>/g, '').split(/\s+/).length;
+  let displayTitle = article.title;
+  let displayHtml = article.sanitizedHtml;
+  let isPreview = false;
+
+  if (revisionId) {
+    const revision = article.revisions.find(r => r.id === revisionId);
+    if (revision) {
+      displayTitle = `${revision.title} (Revision v${revision.version})`;
+      isPreview = true;
+      // Convert TipTap JSON to HTML for preview since revisions only store JSON
+      try {
+        const rawHtml = generateHTML(revision.contentJson as any, sharedEditorExtensions);
+        displayHtml = sanitizeHtml(rawHtml);
+      } catch (err) {
+        displayHtml = '<p class="text-destructive">Failed to render revision preview.</p>';
+      }
+    }
+  }
+
+  const words = displayHtml.replace(/<[^>]+>/g, '').split(/\s+/).length;
   const readTime = Math.max(1, Math.ceil(words / 200));
 
   return (
     <div className="max-w-6xl mx-auto p-4 md:p-8 flex flex-col lg:flex-row gap-8">
       {/* Main Column */}
       <div className="flex-1 space-y-8">
+        {isPreview && (
+          <div className="bg-amber-500/10 border border-amber-500/20 text-amber-600 p-4 rounded-lg flex items-center justify-between">
+            <span className="font-semibold">You are viewing a historical revision.</span>
+            <Link href={`/dashboard/review/${article.id}`} className="text-sm underline font-medium">Return to Current Version</Link>
+          </div>
+        )}
         <div className="bg-card border rounded-lg p-6 shadow-sm">
-          <h1 className="text-4xl font-extrabold tracking-tight mb-2 text-foreground">{article.title}</h1>
+          <h1 className="text-4xl font-extrabold tracking-tight mb-2 text-foreground">{displayTitle}</h1>
           <p className="text-muted-foreground mb-6">By {article.author.name} ({article.author.email})</p>
           
           <div className="flex gap-4 text-sm text-muted-foreground mb-8 border-b pb-4">
@@ -51,7 +97,7 @@ export default async function ReviewDetailPage({ params }: { params: Promise<{ i
 
           <div 
             className="prose prose-sm md:prose-base dark:prose-invert max-w-none focus:outline-none"
-            dangerouslySetInnerHTML={{ __html: article.sanitizedHtml }}
+            dangerouslySetInnerHTML={{ __html: displayHtml }}
           />
         </div>
 
@@ -64,7 +110,11 @@ export default async function ReviewDetailPage({ params }: { params: Promise<{ i
                   <p className="font-semibold text-foreground">Version {rev.version}</p>
                   <p className="text-xs text-muted-foreground">{new Date(rev.createdAt).toLocaleString()}</p>
                 </div>
-                <button className="text-sm text-muted-foreground" disabled>View (Coming Soon)</button>
+                {revisionId === rev.id ? (
+                  <span className="text-sm font-semibold text-primary">Viewing</span>
+                ) : (
+                  <Link href={`/dashboard/review/${article.id}?rev=${rev.id}`} className="text-sm text-primary hover:underline font-medium">View</Link>
+                )}
               </div>
             ))}
           </div>

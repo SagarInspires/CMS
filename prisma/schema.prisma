@@ -14,9 +14,14 @@ enum Role {
 }
 
 enum UserStatus {
+  PENDING_VERIFICATION
   ACTIVE
   INACTIVE
   LOCKED
+}
+
+enum IdentityProvider {
+  GOOGLE
 }
 
 enum ArticleStatus {
@@ -34,17 +39,21 @@ model User {
   id           String   @id @default(uuid())
   name         String
   email        String   @unique
-  passwordHash String
+  passwordHash String?
   role         Role     @default(AUTHOR)
   status       UserStatus @default(ACTIVE)
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
-  articles          Article[]
-  refreshSessions   RefreshSession[]
-  comments          EditorialComment[]
-  auditLogs         AuditLog[]
-  resetTokens       PasswordResetToken[]
+  articles                Article[]
+  refreshSessions         RefreshSession[]
+  comments                EditorialComment[]
+  resolvedComments        EditorialComment[] @relation("CommentResolver")
+  articleRevisions        ArticleRevision[]
+  auditLogs               AuditLog[]
+  resetTokens             PasswordResetToken[]
+  emailVerificationTokens EmailVerificationToken[]
+  externalIdentities      ExternalIdentity[]
 }
 
 model RefreshSession {
@@ -67,6 +76,34 @@ model PasswordResetToken {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model EmailVerificationToken {
+  id         String    @id @default(uuid())
+  userId     String
+  tokenHash  String    @unique
+  expiresAt  DateTime
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tokenHash])
+  @@index([expiresAt])
+}
+
+model ExternalIdentity {
+  id                String           @id @default(uuid())
+  provider          IdentityProvider
+  providerAccountId String
+  userId            String
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Article {
@@ -109,9 +146,11 @@ model ArticleRevision {
   version       Int
   title         String
   contentJson   Json
+  authorId      String?
   createdAt     DateTime @default(now())
 
   article       Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  author        User?    @relation(fields: [authorId], references: [id], onDelete: SetNull)
 }
 
 model Category {
@@ -154,11 +193,24 @@ model EditorialComment {
   userId     String
   content    String
   visibility CommentVisibility @default(PUBLIC_TO_AUTHOR)
+  
+  // Positional text anchoring in the TipTap document
+  nodeId     String?
+  textRange  Json?
+  
+  // Threading and Resolution
+  parentId   String?
+  resolvedAt DateTime?
+  resolverId String?
+  
   createdAt  DateTime          @default(now())
   updatedAt  DateTime          @updatedAt
 
-  article Article @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  article  Article             @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  user     User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent   EditorialComment?   @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  EditorialComment[]  @relation("CommentReplies")
+  resolver User?               @relation("CommentResolver", fields: [resolverId], references: [id], onDelete: SetNull)
 }
 
 model AuditLog {

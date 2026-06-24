@@ -1,7 +1,7 @@
 import { verifySession } from "@/lib/auth/session";
 import { hasPermission } from "@/lib/auth/rbac";
 import { redirect } from "next/navigation";
-import { ArticleForm } from "@/components/articles/ArticleForm";
+import { createBlankDraft } from "../actions";
 
 export default async function NewArticlePage() {
   const session = await verifySession();
@@ -19,10 +19,5 @@ export default async function NewArticlePage() {
     );
   }
 
-  return (
-    <div className="max-w-4xl mx-auto py-8 px-4">
-      <h1 className="text-3xl font-bold mb-8">Write New Article</h1>
-      <ArticleForm />
-    </div>
-  );
+  return createBlankDraft();
 }

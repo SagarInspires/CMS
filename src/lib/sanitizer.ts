@@ -11,8 +11,8 @@ export function sanitizeHtml(dirtyHtml: string): string {
     .replace(/href=(["'])\//g, 'href=$1http://dummy.local/');
 
   const sanitized = DOMPurify.sanitize(preProcessed, {
-    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'br', 'img'],
-    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'target', 'rel', 'class', 'width', 'height'],
+    ALLOWED_TAGS: ['b', 'i', 'em', 'strong', 'a', 'p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre', 'br', 'img', 'table', 'thead', 'tbody', 'tr', 'th', 'td', 'figure', 'figcaption', 'mark', 'span', 'u', 's', 'sub', 'sup'],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'target', 'rel', 'class', 'width', 'height', 'style', 'data-type', 'data-comment-id', 'data-colwidth', 'colspan', 'rowspan'],
   });
 
   return sanitized

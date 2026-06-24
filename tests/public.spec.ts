@@ -8,7 +8,7 @@ test.describe('Public Discovery & SEO', () => {
     
     // Check main heading / layout
     await expect(page.locator('text=EditorialFlow').first()).toBeVisible();
-    await expect(page.locator('h2', { hasText: 'Latest Articles' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2, name: /latest dispatches|latest articles/i })).toBeVisible();
     
     // Check if the "Featured Article" section is visible (if seeded)
     // The seed script creates "Getting Started with Next.js 15" as PUBLISHED
