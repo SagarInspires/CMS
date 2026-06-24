@@ -1,50 +1,50 @@
 # EditorialFlow Production Deployment Guide
 
-This guide outlines the procedure for deploying EditorialFlow. We strongly recommend **Vercel** for seamless deployment, but also provide a bundled Docker Compose setup for self-hosting.
+We currently target **Render** for production deployment because it natively supports Docker and Managed PostgreSQL.
 
-## Option A: Vercel Deployment (Recommended)
+## Option A: Render Deployment (Recommended)
 
-1. **Create Postgres Database**
-   Provision a Vercel Postgres or Supabase database.
-2. **Configure Pooled `DATABASE_URL`**
-   Ensure your connection string uses connection pooling (e.g., append `?pgbouncer=true` if using Supabase, or use the direct pooled URL provided by Vercel).
-3. **Configure `DIRECT_URL`**
-   If required by your Prisma provider for migrations, set the `DIRECT_URL` to the non-pooled connection string.
-4. **Add Vercel Environment Variables**
-   Add all necessary variables from `.env.production.example` to your Vercel project settings, specifically including `APP_URL`, `JWT_SECRET`, `CRON_SECRET`, and database URLs.
-5. **Configure Google Cloud OAuth Origins**
-   In your Google Cloud Console:
-   - Add your deployed `APP_URL` to the **Authorized JavaScript origins**.
-   - Add any callback/redirect routes if used.
-6. **Configure Resend Domain/Sender**
-   Set `RESEND_API_KEY` and `EMAIL_FROM` with a verified domain.
-7. **Configure Vercel Blob**
-   Set `STORAGE_PROVIDER=vercel-blob` and provide the `BLOB_READ_WRITE_TOKEN`.
-8. **Apply Prisma Migrations Safely**
-   Add a build step or run `npx prisma migrate deploy` to safely apply the schema to your production database.
-9. **Deploy**
-   Trigger a Vercel deployment.
-10. **Validate**
-    After deployment, test the following flows:
-    - `/api/health`
-    - Register / Email Verification
-    - Google Login
-    - Image Upload
-    - Article Publish
-    - Revision Preview
-    - Comments / Revisions / Autosave
+### 1. Prepare Environment Variables
+Before deploying, gather the required credentials. See `.env.production.example` for the full list. Key variables include:
+- `DATABASE_URL`: Connection string to your production Render PostgreSQL database.
+- `APP_URL`: The exact domain assigned by Render (e.g., `https://editorialflow-cms.onrender.com`).
+- `STORAGE_PROVIDER`: Must be set to `vercel-blob`.
+- `BLOB_READ_WRITE_TOKEN`: Your Vercel Blob token for cloud storage.
+- `UPSTASH_REDIS_REST_URL` & `UPSTASH_REDIS_REST_TOKEN`: From your Upstash Redis database.
+- `RESEND_API_KEY`: From Resend.
+
+### 2. Provision Render PostgreSQL
+1. Go to your Render Dashboard -> **New +** -> **PostgreSQL**.
+2. Name it (e.g. `editorialflow-db`), select your Region, and pick your Instance Type.
+3. Once provisioned, copy the **Internal Database URL** for the Web Service.
+
+### 3. Provision Web Service
+1. Go to your Render Dashboard -> **New +** -> **Web Service**.
+2. Connect this GitHub repository.
+3. Configure the service:
+   - **Name**: `editorialflow-cms`
+   - **Language**: `Docker` (Crucial for leveraging our Next.js standalone container)
+   - **Branch**: `main`
+   - **Health Check Path**: `/api/health`
+4. Add all environment variables from Step 1.
+5. Click **Deploy Web Service**.
+
+### 4. Post-Deployment Checks
+- Ensure Google Cloud Console Authorized JavaScript Origins includes your `.onrender.com` domain.
+- The `docker-entrypoint.sh` automatically runs `prisma migrate deploy` on startup, ensuring your database schema is strictly synchronized.
+- Test login, Google Auth, Image Uploads, and Publishing.
 
 ---
 
 ## Option B: Docker Compose Deployment (Self-Hosted)
 
-## Prerequisites
+### Prerequisites
 
 - Docker and Docker Compose installed on the host machine.
 - A secure reverse proxy (like Nginx, Caddy, or Traefik) terminating TLS/HTTPS.
 - A long-lived, cryptographically secure `JWT_SECRET` and `CRON_SECRET`.
 
-## Security Architecture
+### Security Architecture
 
 1. **Non-Root Runtime:** The Next.js application runs as a restricted `nextjs` user inside the container.
 2. **Standalone Build:** Only the compiled code and strictly required dependencies are included in the final image, drastically reducing the attack surface.
@@ -52,9 +52,9 @@ This guide outlines the procedure for deploying EditorialFlow. We strongly recom
 4. **Strict Authentication:** The application will fatally exit if booted in production without a valid `JWT_SECRET`.
 5. **Secure Cookies:** `NODE_ENV=production` automatically enforces `Secure` and `HttpOnly` flags on session cookies.
 
-## Deployment Steps
+### Deployment Steps
 
-### 1. Environment Configuration
+#### 1. Environment Configuration
 
 Copy the example environment file and fill in the required secure secrets:
 
@@ -64,7 +64,7 @@ cp .env.production.example .env
 nano .env
 ```
 
-### 2. Build the Production Image
+#### 2. Build the Production Image
 
 The multi-stage build securely compiles Next.js:
 
@@ -72,7 +72,7 @@ The multi-stage build securely compiles Next.js:
 docker compose -f docker-compose.production.yml build
 ```
 
-### 3. Start the Application
+#### 3. Start the Application
 
 Bring up the database and the web server in detached mode:
 
@@ -82,7 +82,7 @@ docker compose -f docker-compose.production.yml up -d
 
 *Note: The Next.js container automatically executes `npx prisma migrate deploy` upon startup. It will safely apply any missing schema migrations before spinning up the Node server. Database seeding is completely disabled in production.*
 
-### 4. Health Verification
+#### 4. Health Verification
 
 Verify that both the database and the web server are healthy:
 
@@ -94,11 +94,11 @@ You can also manually check the application health endpoint:
 curl -f http://localhost:3000/api/health
 ```
 
-## Reverse Proxy Requirements (HTTPS)
+### Reverse Proxy Requirements (HTTPS)
 
 You **must** run EditorialFlow behind a reverse proxy that terminates TLS/HTTPS. 
 
-### Nginx Example
+#### Nginx Example
 ```nginx
 server {
     listen 443 ssl;
@@ -120,19 +120,19 @@ server {
 }
 ```
 
-### Caddy Example
+#### Caddy Example
 ```Caddyfile
 editorialflow.example.com {
     reverse_proxy localhost:3000
 }
 ```
 
-## Volumes & Backups
+### Volumes & Backups
 
 - **PostgreSQL Data:** Stored in the `postgres_data` Docker volume. Ensure you implement regular logical backups (e.g., via `pg_dump`).
 - **User Uploads:** Stored in the `uploads_data` volume and mapped to `/app/public/uploads` inside the container. This directory is strictly isolated from application code and restricted by Next.js middleware routing rules.
 
-## Rollback Procedures
+### Rollback Procedures
 
 If a deployment fails:
 1. Revert to the previous image tag or Git commit.
