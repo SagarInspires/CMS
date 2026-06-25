@@ -62,7 +62,7 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion, 
     setContentJson(json);
     setHtmlContent(html);
     setStats(newStats);
-    setSaveStatus('unsaved');
+    setSaveStatus(prev => prev === 'conflict' ? 'conflict' : 'unsaved');
     
     // Store locally for crash recovery
     localStorage.setItem(`draft-${id}`, JSON.stringify({ title, json, timestamp: Date.now() }));
