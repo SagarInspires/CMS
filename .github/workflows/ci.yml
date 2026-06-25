@@ -38,50 +38,34 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Enable Corepack & Install pnpm
-        run: corepack enable pnpm
-
-      - name: Get pnpm store directory
-        id: pnpm-cache
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
-
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+          cache: 'npm'
 
       - name: Install Dependencies
-        run: pnpm install --frozen-lockfile
+        run: npm ci --legacy-peer-deps
 
       - name: Run Prisma Generation
-        run: pnpm db:generate
+        run: npm run db:generate
 
       - name: Apply Database Migrations
-        run: pnpm db:migrate
+        run: npm run db:migrate
 
       - name: Seed Database for E2E Tests
-        run: pnpm db:seed
+        run: npm run db:seed
 
       - name: Typecheck
-        run: pnpm tsc --noEmit
+        run: npm run typecheck
 
       - name: Lint
-        run: pnpm lint
+        run: npm run lint
 
       - name: Unit and Integration Tests
-        run: pnpm test
+        run: npm run test
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
 
       - name: Playwright E2E Tests
-        run: pnpm test:e2e
+        run: npm run test:e2e
 
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
@@ -92,4 +76,4 @@ jobs:
           retention-days: 14
 
       - name: Production Build
-        run: pnpm build
+        run: npm run build
