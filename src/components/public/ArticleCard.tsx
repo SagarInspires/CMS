@@ -19,7 +19,7 @@ export function ArticleCard({ article }: ArticleCardProps) {
         <div className="bg-stone-300 rounded-squircle aspect-[4/5] w-full overflow-hidden relative mb-6 transition-transform duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl">
           <div className="absolute inset-0 flex items-center justify-center p-8 bg-stone-800">
              <h3 className="text-white text-3xl font-serif italic text-center leading-tight">
-               "{article.title}"
+               &quot;{article.title}&quot;
              </h3>
           </div>
           <div className="absolute top-6 left-6 flex gap-2">

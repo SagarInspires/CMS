@@ -76,7 +76,7 @@ export default async function Home() {
                     <div className="bg-stone-900 rounded-squircle aspect-square md:aspect-[4/3] w-full overflow-hidden relative mb-6 transition-transform duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl">
                       <div className="absolute inset-0 flex items-center justify-center p-12">
                          <h3 className="text-white text-4xl md:text-6xl font-serif italic text-center leading-tight">
-                           "{articles[0].title}"
+                           &quot;{articles[0].title}&quot;
                          </h3>
                       </div>
                     </div>

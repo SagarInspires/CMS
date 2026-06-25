@@ -66,7 +66,7 @@ export default async function AboutPage() {
 
             <div className="my-20 py-12 border-y border-stone-300">
               <p className="text-3xl md:text-5xl font-serif italic text-black leading-tight text-center">
-                "A tool should not dictate how you write. It should simply hold the space for your ideas to breathe."
+                &quot;A tool should not dictate how you write. It should simply hold the space for your ideas to breathe.&quot;
               </p>
             </div>
 
