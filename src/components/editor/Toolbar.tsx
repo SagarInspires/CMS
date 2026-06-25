@@ -41,15 +41,15 @@ const ToolbarButton = ({
     title={title}
     aria-label={title}
     className={`p-1.5 rounded-sm flex items-center justify-center transition-colors
-      ${isActive ? 'bg-primary/10 text-primary font-medium' : 'text-muted-foreground hover:bg-secondary hover:text-foreground'}
-      ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+      ${isActive ? 'bg-glass/[0.1] text-foreground font-medium' : 'text-foreground/60 hover:bg-glass/[0.05] hover:text-foreground'}
+      ${disabled ? 'opacity-50 cursor-not-allowed text-foreground/30' : ''}
     `}
   >
     {children}
   </button>
 );
 
-const Divider = () => <div className="w-px h-5 bg-border mx-1" />;
+const Divider = () => <div className="w-px h-5 bg-glass/[0.08] mx-1" />;
 
 const DropdownButton = ({ 
   icon: Icon, 
@@ -81,7 +81,7 @@ const DropdownButton = ({
         <Icon className="w-4 h-4" />
       </ToolbarButton>
       {isOpen && (
-        <div className="absolute top-full left-0 mt-1 w-48 bg-popover text-popover-foreground border border-border rounded-md shadow-elegant z-50 py-1 flex flex-col">
+        <div className="absolute top-full left-0 mt-1 w-48 bg-surface text-foreground border border-glass/[0.08] rounded-md shadow-[0_8px_32px_rgba(0,0,0,0.5)] z-50 py-1 flex flex-col">
           {children}
         </div>
       )}
@@ -93,9 +93,9 @@ const DropdownItem = ({ onClick, label, icon: Icon }: { onClick: () => void, lab
   <button
     type="button"
     onClick={onClick}
-    className="w-full text-left px-3 py-1.5 text-sm hover:bg-accent hover:text-accent-foreground flex items-center gap-2"
+    className="w-full text-left px-3 py-1.5 text-sm hover:bg-glass/[0.05] text-foreground/80 hover:text-foreground flex items-center gap-2 transition-colors"
   >
-    {Icon && <Icon className="w-3.5 h-3.5 text-muted-foreground" />}
+    {Icon && <Icon className="w-3.5 h-3.5 text-foreground/40" />}
     <span>{label}</span>
   </button>
 );
@@ -152,7 +152,7 @@ export function Toolbar({ editor, activeSidebar, setActiveSidebar }: ToolbarProp
   };
 
   return (
-    <div className="flex flex-wrap items-center gap-1 p-1 bg-background border-b border-border shadow-sm sticky top-[60px] z-10 w-full overflow-x-auto">
+    <div className="flex flex-wrap items-center gap-1 p-1 bg-surface border-b border-glass/[0.08] sticky top-[60px] z-10 w-full overflow-x-auto text-foreground">
       
       {/* History */}
       <ToolbarButton
@@ -321,16 +321,16 @@ export function Toolbar({ editor, activeSidebar, setActiveSidebar }: ToolbarProp
         />
         {editor.isActive('table') && (
           <>
-            <div className="h-px bg-border my-1" />
+            <div className="h-px bg-glass/[0.08] my-1" />
             <DropdownItem onClick={() => editor.chain().focus().addColumnAfter().run()} label="Add Column After" icon={ArrowRightToLine} />
             <DropdownItem onClick={() => editor.chain().focus().deleteColumn().run()} label="Delete Column" icon={Trash} />
-            <div className="h-px bg-border my-1" />
+            <div className="h-px bg-glass/[0.08] my-1" />
             <DropdownItem onClick={() => editor.chain().focus().addRowAfter().run()} label="Add Row After" icon={ArrowDownToLine} />
             <DropdownItem onClick={() => editor.chain().focus().deleteRow().run()} label="Delete Row" icon={Trash} />
-            <div className="h-px bg-border my-1" />
+            <div className="h-px bg-glass/[0.08] my-1" />
             <DropdownItem onClick={() => editor.chain().focus().mergeCells().run()} label="Merge Cells" />
             <DropdownItem onClick={() => editor.chain().focus().splitCell().run()} label="Split Cell" />
-            <div className="h-px bg-border my-1" />
+            <div className="h-px bg-glass/[0.08] my-1" />
             <DropdownItem onClick={() => editor.chain().focus().deleteTable().run()} label="Delete Table" icon={Trash2} />
           </>
         )}
@@ -351,7 +351,7 @@ export function Toolbar({ editor, activeSidebar, setActiveSidebar }: ToolbarProp
         disabled={isUploading}
         title="Upload Image"
       >
-        {isUploading ? <Loader2 className="w-4 h-4 animate-spin text-primary" /> : <ImageIcon className="w-4 h-4" />}
+        {isUploading ? <Loader2 className="w-4 h-4 animate-spin text-foreground" /> : <ImageIcon className="w-4 h-4" />}
       </ToolbarButton>
 
       {setActiveSidebar && (

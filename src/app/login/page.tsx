@@ -18,7 +18,7 @@ export default function LoginPage() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#050505] flex items-center justify-center overflow-hidden font-sans selection:bg-white/20 selection:text-white">
+    <div className="relative min-h-screen bg-background flex items-center justify-center overflow-hidden font-sans selection:bg-foreground/20 selection:text-foreground">
       
       {/* --- Fluid Ethereal Background Blobs --- */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
@@ -31,14 +31,14 @@ export default function LoginPage() {
       <div className="relative z-10 w-full max-w-[440px] px-6 animate-fade-in-up">
         
         {/* Floating Glassmorphism Panel */}
-        <div className="bg-white/[0.03] backdrop-blur-3xl border border-white/[0.08] p-10 rounded-[2.5rem] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+        <div className="bg-glass/[0.03] backdrop-blur-3xl border border-glass/[0.08] p-10 rounded-[2.5rem] shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
           
           <div className="mb-12 text-center">
-            <Link href="/" className="inline-block text-3xl font-serif font-bold italic tracking-tighter text-white mb-2 hover:opacity-80 transition-opacity">
+            <Link href="/" className="inline-block text-3xl font-serif font-bold italic tracking-tighter text-foreground mb-2 hover:opacity-80 transition-opacity">
               e.
             </Link>
-            <h1 className="text-2xl font-bold tracking-tight text-white/90">Welcome back</h1>
-            <p className="text-sm text-white/40 mt-2 font-medium">Authenticate to access the studio</p>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground/90">Welcome back</h1>
+            <p className="text-sm text-foreground/40 mt-2 font-medium">Authenticate to access the studio</p>
           </div>
           
           {isVerified && (
@@ -63,8 +63,8 @@ export default function LoginPage() {
           </div>
 
           <div className="relative mb-8 flex items-center justify-center">
-            <div className="absolute w-full border-t border-white/[0.08]" />
-            <span className="relative px-4 bg-transparent text-white/30 text-xs font-bold uppercase tracking-widest backdrop-blur-3xl rounded-full">Or continue with email</span>
+            <div className="absolute w-full border-t border-glass/[0.08]" />
+            <span className="relative px-4 bg-background text-foreground/30 text-xs font-bold uppercase tracking-widest backdrop-blur-3xl rounded-full">Or continue with email</span>
           </div>
 
           <form action={formAction} className="space-y-6">
@@ -74,7 +74,7 @@ export default function LoginPage() {
                   name="email" 
                   type="email" 
                   required 
-                  className="w-full px-5 py-4 bg-white/[0.03] border border-white/[0.08] rounded-2xl text-white focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all placeholder:text-white/20 text-sm font-medium"
+                  className="w-full px-5 py-4 bg-glass/[0.03] border border-glass/[0.08] rounded-2xl text-foreground focus:outline-none focus:ring-1 focus:ring-glass/[0.2] focus:border-glass/[0.2] transition-all placeholder:text-foreground/20 text-sm font-medium"
                   placeholder="Email address"
                 />
               </div>
@@ -83,7 +83,7 @@ export default function LoginPage() {
                   name="password" 
                   type="password" 
                   required 
-                  className="w-full px-5 py-4 bg-white/[0.03] border border-white/[0.08] rounded-2xl text-white focus:outline-none focus:ring-1 focus:ring-white/20 focus:border-white/20 transition-all placeholder:text-white/20 text-sm font-medium"
+                  className="w-full px-5 py-4 bg-glass/[0.03] border border-glass/[0.08] rounded-2xl text-foreground focus:outline-none focus:ring-1 focus:ring-glass/[0.2] focus:border-glass/[0.2] transition-all placeholder:text-foreground/20 text-sm font-medium"
                   placeholder="Password"
                 />
               </div>
@@ -92,15 +92,15 @@ export default function LoginPage() {
             <button 
               type="submit" 
               disabled={isPending}
-              className="w-full py-4 mt-4 bg-gradient-to-r from-white to-white/90 text-black font-bold tracking-tight rounded-2xl hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
+              className="w-full py-4 mt-4 bg-gradient-to-r from-foreground to-foreground/90 text-background font-bold tracking-tight rounded-2xl hover:scale-[1.02] hover:shadow-[0_0_20px_rgba(var(--glass-base),0.3)] transition-all duration-300 disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
             >
               {isPending ? 'Authenticating...' : 'Sign In'}
             </button>
           </form>
 
-          <div className="mt-10 text-center text-sm text-white/40 font-medium">
+          <div className="mt-10 text-center text-sm text-foreground/40 font-medium">
             Don&apos;t have an account?{' '}
-            <Link href="/register" className="text-white hover:text-white/80 font-bold transition-colors">
+            <Link href="/register" className="text-foreground hover:text-foreground/80 font-bold transition-colors">
               Create one
             </Link>
           </div>

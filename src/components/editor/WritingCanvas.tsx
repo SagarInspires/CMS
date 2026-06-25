@@ -67,7 +67,7 @@ export function WritingCanvas({
     content: initialContent,
     editorProps: {
       attributes: {
-        class: 'prose prose-lg sm:prose-xl xl:prose-2xl prose-stone focus:outline-none min-h-[60vh] pb-32 max-w-none editorial-canvas prose-headings:font-sans prose-headings:font-bold prose-headings:tracking-tighter prose-headings:text-white prose-p:font-sans prose-p:leading-relaxed prose-p:tracking-tight prose-p:text-white/80 prose-blockquote:font-serif prose-blockquote:font-style-italic prose-blockquote:border-l-white/20 prose-blockquote:text-white/60 prose-img:rounded-[2rem] prose-img:shadow-[0_0_40px_rgba(255,255,255,0.05)] prose-img:border prose-img:border-white/[0.08] prose-strong:text-white prose-a:text-white',
+        class: 'prose prose-lg sm:prose-xl xl:prose-2xl prose-stone focus:outline-none min-h-[60vh] pb-32 max-w-none editorial-canvas prose-headings:font-sans prose-headings:font-bold prose-headings:tracking-tighter prose-headings:text-foreground prose-p:font-sans prose-p:leading-relaxed prose-p:tracking-tight prose-p:text-foreground/80 prose-blockquote:font-serif prose-blockquote:font-style-italic prose-blockquote:border-l-glass/[0.2] prose-blockquote:text-foreground/60 prose-img:rounded-[2rem] prose-img:shadow-[0_0_40px_rgba(var(--glass-base),0.05)] prose-img:border prose-img:border-glass/[0.08] prose-strong:text-foreground prose-a:text-foreground',
       },
     },
     onUpdate: ({ editor }) => {
@@ -184,7 +184,7 @@ export function WritingCanvas({
             onChange={(e) => onTitleChange(e.target.value)}
             disabled={isLocked}
             placeholder="Document Title"
-            className="w-full text-5xl sm:text-6xl md:text-7xl font-sans font-bold tracking-tighter text-white bg-transparent border-none focus:outline-none focus:ring-0 mb-8 placeholder:text-white/20 leading-[0.95] disabled:opacity-50"
+            className="w-full text-5xl sm:text-6xl md:text-7xl font-sans font-bold tracking-tighter text-foreground bg-transparent border-none focus:outline-none focus:ring-0 mb-8 placeholder:text-foreground/20 leading-[0.95] disabled:opacity-50"
           />
           
           {/* TipTap Canvas */}
@@ -193,14 +193,14 @@ export function WritingCanvas({
         
         {/* Right Sidebar */}
         {activeSidebar && (
-          <div className="hidden lg:flex flex-col w-80 flex-shrink-0 border-l border-white/[0.08] pl-6 h-[calc(100vh-60px)] sticky top-[60px]">
+          <div className="hidden lg:flex flex-col w-80 flex-shrink-0 border-l border-glass/[0.08] pl-6 h-[calc(100vh-60px)] sticky top-[60px]">
             
             {/* Sidebar Tabs */}
-          <div className="flex items-center gap-4 border-b border-white/[0.08] mb-4 pb-2">
+          <div className="flex items-center gap-4 border-b border-glass/[0.08] mb-4 pb-2">
             <button
               onClick={() => setActiveSidebar('outline')}
               className={`flex items-center gap-1.5 text-sm font-medium pb-2 border-b-2 transition-colors -mb-[9px] ${
-                activeSidebar === 'outline' ? 'border-white text-white' : 'border-transparent text-white/40 hover:text-white'
+                activeSidebar === 'outline' ? 'border-foreground text-foreground' : 'border-transparent text-foreground/40 hover:text-foreground'
               }`}
             >
               <ListTree className="w-4 h-4" />
@@ -209,7 +209,7 @@ export function WritingCanvas({
             <button
               onClick={() => setActiveSidebar('comments')}
               className={`flex items-center gap-1.5 text-sm font-medium pb-2 border-b-2 transition-colors -mb-[9px] ${
-                activeSidebar === 'comments' ? 'border-white text-white' : 'border-transparent text-white/40 hover:text-white'
+                activeSidebar === 'comments' ? 'border-foreground text-foreground' : 'border-transparent text-foreground/40 hover:text-foreground'
               }`}
             >
               <MessageSquare className="w-4 h-4" />
@@ -218,7 +218,7 @@ export function WritingCanvas({
             <button
               onClick={() => setActiveSidebar('revisions')}
               className={`flex items-center gap-1.5 text-sm font-medium pb-2 border-b-2 transition-colors -mb-[9px] ${
-                activeSidebar === 'revisions' ? 'border-white text-white' : 'border-transparent text-white/40 hover:text-white'
+                activeSidebar === 'revisions' ? 'border-foreground text-foreground' : 'border-transparent text-foreground/40 hover:text-foreground'
               }`}
             >
               <History className="w-4 h-4" />
@@ -226,7 +226,7 @@ export function WritingCanvas({
             </button>
           </div>
 
-          <div className="flex-1 overflow-hidden relative border-t border-white/[0.08] mt-[1px]">
+          <div className="flex-1 overflow-hidden relative border-t border-glass/[0.08] mt-[1px]">
             {activeSidebar === 'outline' && <Outline editor={editor} />}
             {activeSidebar === 'comments' && (
               <CommentsSidebar 

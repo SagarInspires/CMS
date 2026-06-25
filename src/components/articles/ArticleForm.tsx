@@ -113,23 +113,23 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
   const toggleSettings = () => setIsSettingsOpen(!isSettingsOpen);
 
   return (
-    <div className="flex h-screen w-full bg-transparent overflow-hidden text-white relative z-10 animate-fade-in-up">
+    <div className="flex h-screen w-full bg-transparent overflow-hidden text-foreground relative z-10 animate-fade-in-up">
       
       {/* Main Studio Column */}
       <div className="flex-1 flex flex-col items-center overflow-y-auto scroll-smooth rounded-[2rem]">
         
         {/* Minimal App Chrome Header */}
-        <header className={`sticky top-6 w-[95%] max-w-[1200px] flex justify-between items-center px-6 py-4 bg-white/[0.03] backdrop-blur-3xl z-20 rounded-full border border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-transform duration-300 ${isFocusMode ? '-translate-y-24 opacity-0' : 'translate-y-0 opacity-100 shadow-sm'}`}>
+        <header className={`sticky top-6 w-[95%] max-w-[1200px] flex justify-between items-center px-6 py-4 bg-glass/[0.03] backdrop-blur-3xl z-20 rounded-full border border-glass/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.5)] transition-transform duration-300 ${isFocusMode ? '-translate-y-24 opacity-0' : 'translate-y-0 opacity-100 shadow-sm'}`}>
           <div className="flex items-center gap-4">
-            <Link href="/dashboard/articles" className="text-sm font-bold tracking-tight text-white/40 hover:text-white transition-colors">
+            <Link href="/dashboard/articles" className="text-sm font-bold tracking-tight text-foreground/40 hover:text-foreground transition-colors">
               ← Drafts
             </Link>
-            <div className="h-4 w-px bg-white/[0.08]" />
+            <div className="h-4 w-px bg-glass/[0.08]" />
             <div 
               role="status"
               aria-live="polite"
               data-testid="editor-save-status"
-              className="flex items-center gap-2 text-sm text-white/40 font-medium"
+              className="flex items-center gap-2 text-sm text-foreground/40 font-medium"
             >
               {saveStatus === 'idle' && <span>Ready to write</span>}
               {saveStatus === 'saved' && <><CheckCircle2 className="w-4 h-4 text-emerald-500" /> <span>Saved</span></>}
@@ -138,10 +138,10 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
               {saveStatus === 'error' && <><AlertCircle className="w-4 h-4 text-red-500" /> <span>Save failed</span></>}
               {saveStatus === 'conflict' && <><AlertCircle className="w-4 h-4 text-red-500" /> <span>Conflict detected</span></>}
             </div>
-            <div className="h-4 w-px bg-white/[0.08] hidden sm:block" />
+            <div className="h-4 w-px bg-glass/[0.08] hidden sm:block" />
             <span 
               data-testid="editor-stats"
-              className="text-sm text-white/40 font-medium hidden sm:inline-block"
+              className="text-sm text-foreground/40 font-medium hidden sm:inline-block"
             >
               {stats.words} words • {stats.chars} chars • {stats.readingTime} min read
             </span>
@@ -150,14 +150,14 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
           <div className="flex items-center gap-4">
             <Link 
               href={`/dashboard/review/${id}`}
-              className="px-6 py-2.5 text-sm font-bold bg-gradient-to-r from-white to-white/90 text-black rounded-full hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+              className="px-6 py-2.5 text-sm font-bold bg-gradient-to-r from-foreground to-foreground/90 text-background rounded-full hover:scale-105 transition-transform shadow-[0_0_20px_rgba(var(--glass-base),0.2)]"
             >
               Publish
             </Link>
             <button 
               type="button" 
               onClick={toggleSettings}
-              className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${isSettingsOpen ? 'bg-white/[0.1] text-white border border-white/20' : 'text-white/40 hover:bg-white/[0.05] border border-transparent'}`}
+              className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${isSettingsOpen ? 'bg-glass/[0.1] text-foreground border border-glass/[0.2]' : 'text-foreground/40 hover:bg-glass/[0.05] border border-transparent'}`}
               aria-label="Toggle settings"
             >
               <Settings className="w-5 h-5" />
@@ -211,33 +211,33 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
 
       {/* Collapsible Settings Panel */}
       <aside 
-        className={`bg-[#0A0A0A] border-l border-white/[0.05] transition-all duration-300 ease-in-out z-30 ${isSettingsOpen ? 'w-80 translate-x-0' : 'w-0 translate-x-full border-l-0'} overflow-y-auto`}
+        className={`bg-surface border-l border-glass/[0.05] transition-all duration-300 ease-in-out z-30 ${isSettingsOpen ? 'w-80 translate-x-0' : 'w-0 translate-x-full border-l-0'} overflow-y-auto`}
       >
         <div className="w-80 p-8 flex flex-col gap-8">
-          <div className="flex items-center justify-between pb-4 border-b border-white/[0.05]">
-            <h2 className="text-xl font-bold tracking-tight text-white">Settings</h2>
-            <button onClick={toggleSettings} className="p-2 text-white/40 hover:bg-white/[0.05] hover:text-white rounded-full transition-colors border border-transparent">
+          <div className="flex items-center justify-between pb-4 border-b border-glass/[0.05]">
+            <h2 className="text-xl font-bold tracking-tight text-foreground">Settings</h2>
+            <button onClick={toggleSettings} className="p-2 text-foreground/40 hover:bg-glass/[0.05] hover:text-foreground rounded-full transition-colors border border-transparent">
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
           
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-bold tracking-tight mb-2 text-white/80">URL Slug</label>
-              <input type="text" className="w-full px-4 py-3 text-sm border border-white/[0.08] bg-white/[0.02] rounded-xl focus:border-white/30 text-white placeholder:text-white/20 outline-none transition-all" placeholder="auto-generated-slug" />
+              <label className="block text-sm font-bold tracking-tight mb-2 text-foreground/80">URL Slug</label>
+              <input type="text" className="w-full px-4 py-3 text-sm border border-glass/[0.08] bg-glass/[0.02] rounded-xl focus:border-glass/[0.3] text-foreground placeholder:text-foreground/20 outline-none transition-all" placeholder="auto-generated-slug" />
             </div>
             
             <div>
-              <label className="block text-sm font-bold tracking-tight mb-2 text-white/80">Excerpt</label>
-              <textarea rows={3} className="w-full px-4 py-3 text-sm border border-white/[0.08] bg-white/[0.02] rounded-xl focus:border-white/30 text-white placeholder:text-white/20 outline-none resize-none transition-all" placeholder="A brief summary..." />
+              <label className="block text-sm font-bold tracking-tight mb-2 text-foreground/80">Excerpt</label>
+              <textarea rows={3} className="w-full px-4 py-3 text-sm border border-glass/[0.08] bg-glass/[0.02] rounded-xl focus:border-glass/[0.3] text-foreground placeholder:text-foreground/20 outline-none resize-none transition-all" placeholder="A brief summary..." />
             </div>
 
             <div>
-              <label className="block text-sm font-bold tracking-tight mb-2 text-white/80">Category</label>
-              <select className="w-full px-4 py-3 text-sm border border-white/[0.08] bg-white/[0.02] rounded-xl focus:border-white/30 text-white outline-none transition-all">
-                <option value="" className="bg-[#0A0A0A]">Select category...</option>
-                <option value="tech" className="bg-[#0A0A0A]">Technology</option>
-                <option value="design" className="bg-[#0A0A0A]">Design</option>
+              <label className="block text-sm font-bold tracking-tight mb-2 text-foreground/80">Category</label>
+              <select className="w-full px-4 py-3 text-sm border border-glass/[0.08] bg-glass/[0.02] rounded-xl focus:border-glass/[0.3] text-foreground outline-none transition-all">
+                <option value="" className="bg-surface">Select category...</option>
+                <option value="tech" className="bg-surface">Technology</option>
+                <option value="design" className="bg-surface">Design</option>
               </select>
             </div>
           </div>

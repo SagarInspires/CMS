@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Outfit, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/ThemeProvider";
 
 const outfit = Outfit({ 
   subsets: ["latin"],
@@ -24,9 +25,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${outfit.variable} ${playfair.variable}`}>
-      <body className="font-sans antialiased selection:bg-black selection:text-white" suppressHydrationWarning>
-        {children}
+    <html lang="en" className={`${outfit.variable} ${playfair.variable}`} suppressHydrationWarning>
+      <body className="font-sans antialiased selection:bg-primary selection:text-primary-foreground bg-background text-foreground" suppressHydrationWarning>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="dark"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
