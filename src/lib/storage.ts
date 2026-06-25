@@ -68,15 +68,14 @@ const resolveProvider = (): StorageProvider => {
 
   if (!provider) {
     if (process.env.NODE_ENV === 'production') {
-      throw new Error('CRITICAL: STORAGE_PROVIDER environment variable must be set in production (e.g. "local" or "vercel-blob").');
+      console.warn('WARNING: STORAGE_PROVIDER environment variable is not set in production. Defaulting to "local".');
     }
-    // Default to local in dev/test
     return new LocalStorageProvider();
   }
 
   if (provider === 'vercel-blob') {
     if (!process.env.BLOB_READ_WRITE_TOKEN) {
-      throw new Error('CRITICAL: BLOB_READ_WRITE_TOKEN is missing. Required when STORAGE_PROVIDER=vercel-blob.');
+      console.warn('WARNING: BLOB_READ_WRITE_TOKEN is missing. Vercel Blob storage will fail if used.');
     }
     return new VercelBlobStorageProvider();
   }
@@ -85,7 +84,8 @@ const resolveProvider = (): StorageProvider => {
     return new LocalStorageProvider();
   }
 
-  throw new Error(`CRITICAL: Invalid STORAGE_PROVIDER "${provider}". Allowed values: "local", "vercel-blob".`);
+  console.warn(`WARNING: Invalid STORAGE_PROVIDER "${provider}". Defaulting to "local".`);
+  return new LocalStorageProvider();
 };
 
 export const storage: StorageProvider = resolveProvider();
