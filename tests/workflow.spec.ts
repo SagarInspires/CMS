@@ -11,7 +11,7 @@ test.describe('Editorial Workflow', () => {
     await expect(page).toHaveURL(/.*\/dashboard/);
     
     await page.goto('/dashboard/review');
-    await expect(page.locator('h1')).not.toContainText('Editorial Review Queue');
+    await expect(page.locator('h1')).not.toContainText('Review Queue');
   });
 
   test('Editor can view review queue and access detail page', async ({ page }) => {
@@ -35,7 +35,7 @@ test.describe('Editorial Workflow', () => {
       await page.click('button[type="submit"]');
 
       await page.click('text=Review Queue');
-      await expect(page.locator('h1')).toContainText('Editorial Review Queue');
+      await expect(page.locator('h1')).toContainText('Review Queue');
       
       await page.locator(`a[href="/dashboard/review/${article.id}"]`).click();
       await expect(page.locator('h2', { hasText: 'Status & Actions' })).toBeVisible();

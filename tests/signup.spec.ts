@@ -20,12 +20,12 @@ test.describe('Public Signup and Verification Workflow', () => {
   test('complete signup, verification, and role enforcement flow', async ({ page }) => {
     // 1. Visitor opens Register
     await page.goto('/register');
-    await expect(page.getByRole('heading', { level: 1, name: 'Create an Account' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Join the vanguard' })).toBeVisible();
 
-    const nameInput = page.getByLabel("Full Name");
-    const emailInput = page.getByLabel("Email Address");
-    const passwordInput = page.getByLabel("Password", { exact: true });
-    const confirmPasswordInput = page.getByLabel("Confirm Password");
+    const nameInput = page.getByPlaceholder("Full Name");
+    const emailInput = page.getByPlaceholder("Email Address");
+    const passwordInput = page.getByPlaceholder("Password", { exact: true });
+    const confirmPasswordInput = page.getByPlaceholder("Confirm Password");
     const submitButton = page.getByRole("button", { name: "Create Account" });
 
     // 2. Invalid form displays accessible errors (Password mismatch)
@@ -115,7 +115,7 @@ test.describe('Public Signup and Verification Workflow', () => {
 
     // 8. User reaches Author dashboard
     await expect(page).toHaveURL(/.*\/dashboard/);
-    await expect(page.locator('h1', { hasText: 'Dashboard' })).toBeVisible();
+    await expect(page.locator('h1', { hasText: 'Overview' })).toBeVisible();
 
     // 9. User cannot access Editor/Admin routes
     // AUTHOR cannot access Admin user management

@@ -19,7 +19,7 @@ test.describe('Image Upload E2E Workflow', () => {
       await expect(page).toHaveURL(/.*\/dashboard/);
 
       // 2. Author opens new article page
-      await page.getByRole("link", { name: "Write New" }).click();
+      await page.getByRole("link", { name: "New Draft +" }).click();
 
       await expect(page).toHaveURL(/\/dashboard\/articles\/[^/]+\/edit$/, { timeout: 15_000 });
 

@@ -10,7 +10,7 @@ test('login and view dashboard', async ({ page }) => {
 
   // Verify redirect to dashboard
   await expect(page).toHaveURL(/.*\/dashboard/);
-  await expect(page.locator('h1', { hasText: 'Dashboard' })).toBeVisible();
+  await expect(page.locator('h1', { hasText: 'Overview' })).toBeVisible();
   
   // Verify Admin sidebar items
   await expect(page.locator('a', { hasText: 'Review Queue' })).toBeVisible();

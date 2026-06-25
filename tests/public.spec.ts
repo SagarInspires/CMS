@@ -7,8 +7,8 @@ test.describe('Public Discovery & SEO', () => {
     await page.goto('/');
     
     // Check main heading / layout
-    await expect(page.locator('text=EditorialFlow').first()).toBeVisible();
-    await expect(page.getByRole('heading', { level: 2, name: /latest dispatches|latest articles/i })).toBeVisible();
+    await expect(page.locator('text=editorial.flow').first()).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: /We shape/i })).toBeVisible();
     
     // Check if the "Featured Article" section is visible (if seeded)
     // The seed script creates "Getting Started with Next.js 15" as PUBLISHED
@@ -19,7 +19,7 @@ test.describe('Public Discovery & SEO', () => {
   });
 
   test('Search functionality works', async ({ page }) => {
-    await page.goto('/');
+    await page.goto('/articles');
     
     // Use the search form in the header
     const searchInput = page.locator('input[type="search"]').first();
@@ -30,7 +30,7 @@ test.describe('Public Discovery & SEO', () => {
     await expect(page).toHaveURL(/.*\/articles\?q=Next\.js/);
     
     // Expect search results heading
-    await expect(page.locator('h1')).toContainText('Search results for "Next.js"');
+    await expect(page.locator('h1')).toContainText('Search: "Next.js"');
   });
 
   test('Unpublished articles return 404', async ({ page }) => {

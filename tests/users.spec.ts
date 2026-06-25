@@ -11,7 +11,7 @@ test.describe('Admin User Management', () => {
     await page.click('button[type="submit"]');
     
     await expect(page).toHaveURL(/.*\/dashboard/);
-    await expect(page.locator('h1', { hasText: 'Dashboard' })).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('h1', { hasText: 'Overview' })).toBeVisible({ timeout: 15000 });
 
     
     await page.goto('/dashboard/users');
@@ -37,7 +37,7 @@ test.describe('Admin User Management', () => {
       await page.fill('input[name="password"]', 'Password123!');
       await page.click('button[type="submit"]');
       await expect(page).toHaveURL(/.*\/dashboard/);
-      await expect(page.locator('h1', { hasText: 'Dashboard' })).toBeVisible({ timeout: 15000 });
+      await expect(page.locator('h1', { hasText: 'Overview' })).toBeVisible({ timeout: 15000 });
 
 
       await page.click('a[href="/dashboard/users"]');
