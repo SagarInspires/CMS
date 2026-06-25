@@ -62,7 +62,7 @@ if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) 
     token: process.env.UPSTASH_REDIS_REST_TOKEN,
   });
 } else if (process.env.NODE_ENV === 'production') {
-  throw new Error('CRITICAL SECURITY ERROR: UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are required in production for rate limiting.');
+  console.warn('WARNING: UPSTASH_REDIS_REST_URL and UPSTASH_REDIS_REST_TOKEN are missing. In-memory rate limiting will fail at runtime in production.');
 }
 
 /**
