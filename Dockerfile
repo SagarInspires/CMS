@@ -1,17 +1,14 @@
 # syntax=docker/dockerfile:1
 FROM node:22-alpine AS base
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
 RUN apk add --no-cache libc6-compat openssl
-RUN corepack enable
 
 FROM base AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml* pnpm-workspace.yaml* ./
+COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 ENV npm_config_fetch_timeout=600000
 ENV npm_config_fetch_retries=5
-RUN pnpm install --frozen-lockfile --ignore-scripts=false
+RUN npm ci --ignore-scripts=false
 
 FROM base AS builder
 WORKDIR /app
@@ -27,8 +24,8 @@ ENV UPSTASH_REDIS_REST_TOKEN="dummy_token"
 ARG NEXT_PUBLIC_GOOGLE_CLIENT_ID
 ENV NEXT_PUBLIC_GOOGLE_CLIENT_ID=$NEXT_PUBLIC_GOOGLE_CLIENT_ID
 
-RUN pnpm prisma generate
-RUN pnpm build
+RUN npx prisma generate
+RUN npm run build
 
 FROM base AS runner
 WORKDIR /app
