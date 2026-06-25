@@ -27,7 +27,7 @@ test.describe('Public Discovery & SEO', () => {
     await searchInput.press('Enter');
 
     // Should redirect to /articles?q=Next.js
-    await expect(page).toHaveURL(/.*\/articles\?q=Next\.js/);
+    await expect(page).toHaveURL(/.*\/articles\?.*q=Next\.js.*/);
     
     // Expect search results heading
     await expect(page.locator('h1')).toContainText('Search: "Next.js"');

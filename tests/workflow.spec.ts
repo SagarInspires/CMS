@@ -37,7 +37,7 @@ test.describe('Editorial Workflow', () => {
       await page.click('text=Review Queue');
       await expect(page.locator('h1')).toContainText('Review Queue');
       
-      await page.locator(`a[href="/dashboard/review/${article.id}"]`).click();
+      await page.locator(`a[href="/dashboard/review/${article.id}"]`).first().click();
       await expect(page.locator('h2', { hasText: 'Status & Actions' })).toBeVisible();
       await expect(page.locator('text=Request Changes')).toBeVisible();
     } finally {
