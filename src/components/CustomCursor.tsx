@@ -24,9 +24,9 @@ export function CustomCursor() {
     const style = document.createElement('style');
     style.innerHTML = `
       @media (pointer: fine) { * { cursor: none !important; } }
-      .sparkle-trail-container { mix-blend-mode: screen; pointer-events: none; }
-      .dark .sparkle-trail-container { mix-blend-mode: screen; }
-      .light .sparkle-trail-container { mix-blend-mode: multiply; }
+      .sparkle-trail-container { pointer-events: none; z-index: 99999; }
+      .particle-svg { mix-blend-mode: screen; }
+      .light .particle-svg { mix-blend-mode: multiply; }
     `;
     document.head.appendChild(style);
 
@@ -137,10 +137,10 @@ export function CustomCursor() {
       {/* 0-Lag Glowing Core */}
       <div 
         ref={dotRef}
-        className="fixed top-0 left-0 w-3 h-3 bg-white rounded-full transition-all duration-150 ease-out"
+        className="fixed top-0 left-0 w-3 h-3 bg-foreground rounded-full transition-all duration-150 ease-out"
         style={{ willChange: 'transform', opacity: 0, transformOrigin: 'center center', transform: 'translate(-50%, -50%)' }}
       >
-        <div className="absolute inset-0 bg-white rounded-full blur-[2px]" />
+        <div className="absolute inset-0 bg-foreground rounded-full blur-[2px]" />
       </div>
 
       {/* Particle Pool */}
@@ -148,7 +148,7 @@ export function CustomCursor() {
         <div 
           key={i}
           ref={el => { particleRefs.current[i] = el; }}
-          className="fixed top-0 left-0 w-4 h-4 -ml-2 -mt-2 opacity-0"
+          className="fixed top-0 left-0 w-4 h-4 -ml-2 -mt-2 opacity-0 particle-svg"
           style={{ willChange: 'transform, opacity' }}
         >
           {/* Sparkle SVG */}
