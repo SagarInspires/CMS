@@ -6,6 +6,7 @@ const PARTICLE_COUNT = 40;
 const COLORS = ['#FFD700', '#FF69B4', '#00FFFF', '#FF4500', '#8A2BE2'];
 
 export function CustomCursor() {
+  const containerRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
   const particleRefs = useRef<(HTMLDivElement | null)[]>([]);
 
@@ -24,11 +25,19 @@ export function CustomCursor() {
     const style = document.createElement('style');
     style.innerHTML = `
       @media (pointer: fine) { * { cursor: none !important; } }
-      .sparkle-trail-container { pointer-events: none; z-index: 99999; }
+      .sparkle-trail-container { pointer-events: none; z-index: 99999; margin: 0; padding: 0; background: transparent; border: none; width: 100vw; height: 100vh; max-width: none; max-height: none; }
       .particle-svg { mix-blend-mode: screen; }
       .light .particle-svg { mix-blend-mode: multiply; }
     `;
     document.head.appendChild(style);
+
+    // Elevate to Top Layer
+    if (containerRef.current && 'showPopover' in containerRef.current) {
+      try {
+        // @ts-ignore
+        containerRef.current.showPopover();
+      } catch (e) {}
+    }
 
     let animationFrameId: number;
 
@@ -133,7 +142,12 @@ export function CustomCursor() {
   }, []);
 
   return (
-    <div className="hidden md:block sparkle-trail-container z-[99999] pointer-events-none fixed inset-0">
+    <div 
+      ref={containerRef}
+      // @ts-ignore
+      popover="manual"
+      className="hidden md:block sparkle-trail-container pointer-events-none fixed inset-0"
+    >
       {/* 0-Lag Glowing Core */}
       <div 
         ref={dotRef}
