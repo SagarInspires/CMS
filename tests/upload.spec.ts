@@ -40,13 +40,12 @@ test.describe('Image Upload E2E Workflow', () => {
       await expect(page.getByTestId("rich-text-editor")).toBeVisible();
       await expect(page.getByRole("button", { name: "Upload Image" })).toBeVisible();
 
-      const fileInput = page.locator('input[type="file"]');
-      await expect(fileInput).toBeAttached();
+      const fileChooserPromise = page.waitForEvent('filechooser');
+      await page.getByRole("button", { name: "Upload Image" }).click();
+      const fileChooser = await fileChooserPromise;
 
       const fixturePath = path.resolve(__dirname, 'fixtures/test.png');
-      
-      // Attach file to hidden input
-      await fileInput.setInputFiles(fixturePath);
+      await fileChooser.setFiles(fixturePath);
 
       // Ensure image is visible in the editor
       await expect(page.locator('.ProseMirror img[alt="Test Alt Text"]')).toBeVisible({ timeout: 45000 });
@@ -236,8 +235,9 @@ test.describe('Image Upload E2E Workflow', () => {
       page.getByTestId("rich-text-editor")
     ).toBeVisible();
 
-    const fileInput = page.locator('input[type="file"]');
-    await expect(fileInput).toBeAttached();
+    const fileChooserPromise = page.waitForEvent('filechooser');
+    await page.getByRole("button", { name: "Upload Image" }).click();
+    const fileChooser = await fileChooserPromise;
 
     // Use the committed fixture
     const dummyPdfPath = path.resolve(__dirname, 'fixtures/test.pdf');
@@ -249,7 +249,7 @@ test.describe('Image Upload E2E Workflow', () => {
       await dialog.dismiss();
     });
 
-    await fileInput.setInputFiles(dummyPdfPath);
+    await fileChooser.setFiles(dummyPdfPath);
     
     expect(dialogMessage).toBe('Only image files are allowed.');
     
