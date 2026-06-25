@@ -14,7 +14,7 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
 
   const article = await prisma.article.findUnique({
     where: { id },
-    select: { id: true, authorId: true, title: true, contentJson: true, version: true },
+    select: { id: true, authorId: true, title: true, contentJson: true, version: true, category: { select: { name: true } } },
   });
 
   if (!article) {
@@ -36,6 +36,7 @@ export default async function EditArticlePage({ params }: { params: Promise<{ id
       initialTitle={article.title}
       initialContent={article.contentJson}
       initialVersion={article.version}
+      initialCategory={article.category?.name || ''}
     />
   );
 }

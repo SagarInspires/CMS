@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { Settings, ChevronRight, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { ThemeToggle } from '../ThemeToggle';
 
 const WritingCanvas = dynamic(
   () => import('../editor/WritingCanvas').then(mod => mod.WritingCanvas),
@@ -18,13 +19,15 @@ interface ArticleFormProps {
   initialTitle: string;
   initialContent: any;
   initialVersion: number;
+  initialCategory?: string;
 }
 
-export function ArticleForm({ id, initialTitle, initialContent, initialVersion }: ArticleFormProps) {
+export function ArticleForm({ id, initialTitle, initialContent, initialVersion, initialCategory = '' }: ArticleFormProps) {
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [title, setTitle] = useState(initialTitle);
   const [contentJson, setContentJson] = useState<any>(initialContent);
   const [htmlContent, setHtmlContent] = useState<string>('');
+  const [categoryName, setCategoryName] = useState(initialCategory);
   const [stats, setStats] = useState({ chars: 0, words: 0, readingTime: 0 });
   const [version, setVersion] = useState(initialVersion);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'unsaved' | 'saving' | 'saved' | 'error' | 'conflict'>('idle');
@@ -75,7 +78,7 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
         const response = await fetch(`/api/articles/${id}/autosave`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, contentJson, htmlContent, version })
+          body: JSON.stringify({ title, contentJson, htmlContent, version, categoryName })
         });
 
         const contentType = response.headers.get("content-type") ?? "";
@@ -109,7 +112,7 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
     }, 1500); // 1.5s debounce
 
     return () => clearTimeout(timer);
-  }, [saveStatus, title, contentJson, htmlContent, version, id]);
+  }, [saveStatus, title, contentJson, htmlContent, version, categoryName, id]);
   const toggleSettings = () => setIsSettingsOpen(!isSettingsOpen);
 
   return (
@@ -154,6 +157,7 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
             >
               Publish
             </Link>
+            <ThemeToggle />
             <button 
               type="button" 
               onClick={toggleSettings}
@@ -234,11 +238,16 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
 
             <div>
               <label className="block text-sm font-bold tracking-tight mb-2 text-foreground/80">Category</label>
-              <select className="w-full px-4 py-3 text-sm border border-glass/[0.08] bg-glass/[0.02] rounded-xl focus:border-glass/[0.3] text-foreground outline-none transition-all">
-                <option value="" className="bg-surface">Select category...</option>
-                <option value="tech" className="bg-surface">Technology</option>
-                <option value="design" className="bg-surface">Design</option>
-              </select>
+              <input 
+                type="text" 
+                value={categoryName}
+                onChange={(e) => {
+                  setCategoryName(e.target.value);
+                  setSaveStatus('unsaved');
+                }}
+                className="w-full px-4 py-3 text-sm border border-glass/[0.08] bg-glass/[0.02] rounded-xl focus:border-glass/[0.3] text-foreground placeholder:text-foreground/40 outline-none transition-all" 
+                placeholder="e.g. Technology, Next.js..." 
+              />
             </div>
           </div>
         </div>

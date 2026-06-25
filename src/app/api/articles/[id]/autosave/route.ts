@@ -12,7 +12,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const { id } = await params;
     const body = await req.json();
-    const { title, contentJson, htmlContent, version } = body;
+    const { title, contentJson, htmlContent, version, categoryName } = body;
 
     if (!title || !contentJson || version === undefined) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -43,6 +43,18 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     // Sanitize HTML server-side
     const sanitized = htmlContent ? sanitizeHtml(htmlContent) : '';
 
+    // Handle Category Upsert
+    let categoryId = undefined;
+    if (categoryName && categoryName.trim() !== '') {
+      const slug = categoryName.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      const category = await prisma.category.upsert({
+        where: { slug },
+        update: {},
+        create: { name: categoryName.trim(), slug }
+      });
+      categoryId = category.id;
+    }
+
     // Update article and increment version
     const updated = await prisma.article.update({
       where: { id },
@@ -50,6 +62,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
         title,
         contentJson,
         sanitizedHtml: sanitized,
+        ...(categoryId && { categoryId }),
         version: { increment: 1 },
         updatedAt: new Date(),
       },

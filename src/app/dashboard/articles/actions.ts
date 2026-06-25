@@ -84,3 +84,30 @@ export async function createBlankDraft() {
 
   return redirect(`/dashboard/articles/${article.id}/edit`);
 }
+
+export async function deleteArticle(articleId: string) {
+  const session = await verifySession();
+  if (!session) throw new Error('Unauthorized');
+
+  const article = await prisma.article.findUnique({
+    where: { id: articleId },
+    select: { authorId: true, status: true }
+  });
+
+  if (!article) throw new Error('Article not found');
+
+  if (article.authorId !== session.userId && session.role !== 'ADMIN') {
+    throw new Error('Unauthorized to delete this article');
+  }
+
+  // Only allow deleting DRAFTs
+  if (article.status !== ArticleStatus.DRAFT && session.role !== 'ADMIN') {
+    throw new Error('Can only delete drafts');
+  }
+
+  await prisma.article.delete({
+    where: { id: articleId }
+  });
+
+  revalidatePath('/dashboard/articles');
+}

@@ -1,6 +1,7 @@
 import { verifySession } from '@/lib/auth/session';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import { deleteArticle } from './actions';
 
 export default async function ArticlesPage() {
   const session = await verifySession();
@@ -50,10 +51,20 @@ export default async function ArticlesPage() {
                 <td className="px-8 py-6 font-serif italic text-foreground/40 group-hover:text-foreground/60 transition-colors">
                   {new Date(article.updatedAt).toLocaleDateString()}
                 </td>
-                <td className="px-8 py-6 text-right">
+                <td className="px-8 py-6 text-right flex items-center justify-end gap-4">
                   <Link href={`/dashboard/articles/${article.id}/edit`} className="text-foreground/70 font-bold tracking-tight hover:text-foreground hover:underline transition-colors">
                     Edit →
                   </Link>
+                  {article.status === 'DRAFT' && (
+                    <form action={async () => {
+                      'use server';
+                      await deleteArticle(article.id);
+                    }}>
+                      <button type="submit" className="text-red-500/70 hover:text-red-500 font-bold transition-colors">
+                        Delete
+                      </button>
+                    </form>
+                  )}
                 </td>
               </tr>
             ))}
