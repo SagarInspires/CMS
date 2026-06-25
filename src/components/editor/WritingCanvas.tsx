@@ -67,7 +67,7 @@ export function WritingCanvas({
     content: initialContent,
     editorProps: {
       attributes: {
-        class: 'prose prose-lg sm:prose-xl xl:prose-2xl prose-stone focus:outline-none min-h-[60vh] pb-32 max-w-none editorial-canvas prose-headings:font-serif prose-headings:font-bold prose-headings:tracking-tight prose-p:font-serif prose-p:leading-relaxed prose-blockquote:font-serif prose-blockquote:font-style-italic',
+        class: 'prose prose-lg sm:prose-xl xl:prose-2xl prose-stone focus:outline-none min-h-[60vh] pb-32 max-w-none editorial-canvas prose-headings:font-sans prose-headings:font-bold prose-headings:tracking-tighter prose-headings:text-black prose-p:font-sans prose-p:leading-relaxed prose-p:tracking-tight prose-blockquote:font-serif prose-blockquote:font-style-italic prose-blockquote:border-l-black prose-img:rounded-[2rem] prose-img:shadow-2xl',
       },
     },
     onUpdate: ({ editor }) => {
@@ -184,7 +184,7 @@ export function WritingCanvas({
             onChange={(e) => onTitleChange(e.target.value)}
             disabled={isLocked}
             placeholder="Document Title"
-            className="w-full text-5xl sm:text-6xl md:text-7xl font-serif font-bold tracking-tight text-foreground bg-transparent border-none focus:outline-none focus:ring-0 mb-8 placeholder:text-muted-foreground/30 leading-[1.1] disabled:opacity-50"
+            className="w-full text-5xl sm:text-6xl md:text-7xl font-sans font-bold tracking-tighter text-black bg-transparent border-none focus:outline-none focus:ring-0 mb-8 placeholder:text-stone-300 leading-[0.95] disabled:opacity-50"
           />
           
           {/* TipTap Canvas */}

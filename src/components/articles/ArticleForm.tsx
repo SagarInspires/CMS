@@ -116,12 +116,12 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
     <div className="flex h-screen w-full bg-background overflow-hidden text-foreground">
       
       {/* Main Studio Column */}
-      <div className="flex-1 flex flex-col items-center overflow-y-auto scroll-smooth">
+      <div className="flex-1 flex flex-col items-center overflow-y-auto scroll-smooth rounded-[2rem]">
         
         {/* Minimal App Chrome Header */}
-        <header className={`sticky top-0 w-full flex justify-between items-center px-6 py-4 bg-background/95 backdrop-blur z-20 border-b border-border/40 transition-transform duration-300 ${isFocusMode ? '-translate-y-full opacity-0' : 'translate-y-0 opacity-100 hover:border-border/80'}`}>
+        <header className={`sticky top-6 w-[95%] max-w-[1200px] flex justify-between items-center px-6 py-4 bg-white/80 backdrop-blur-md z-20 rounded-full border border-stone-200 transition-transform duration-300 ${isFocusMode ? '-translate-y-24 opacity-0' : 'translate-y-0 opacity-100 shadow-sm'}`}>
           <div className="flex items-center gap-4">
-            <Link href="/dashboard/articles" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
+            <Link href="/dashboard/articles" className="text-sm font-bold tracking-tight text-stone-500 hover:text-black transition-colors">
               ← Drafts
             </Link>
             <div className="h-4 w-px bg-border" />
@@ -147,17 +147,17 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
             </span>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4">
             <Link 
               href={`/dashboard/review/${id}`}
-              className="px-5 py-2 text-sm font-semibold bg-primary hover:bg-primary/90 text-primary-foreground rounded-sm transition-colors shadow-sm inline-flex items-center"
+              className="px-6 py-2.5 text-sm font-bold bg-black text-white rounded-full hover:scale-105 transition-transform"
             >
-              Review & Publish
+              Publish
             </Link>
             <button 
               type="button" 
               onClick={toggleSettings}
-              className={`p-2 rounded-full transition-colors ${isSettingsOpen ? 'bg-secondary text-secondary-foreground' : 'text-muted-foreground hover:bg-secondary/50'}`}
+              className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${isSettingsOpen ? 'bg-stone-200 text-black' : 'text-stone-500 hover:bg-stone-100'}`}
               aria-label="Toggle settings"
             >
               <Settings className="w-5 h-5" />
@@ -211,30 +211,30 @@ export function ArticleForm({ id, initialTitle, initialContent, initialVersion }
 
       {/* Collapsible Settings Panel */}
       <aside 
-        className={`bg-card border-l border-border transition-all duration-300 ease-in-out z-30 ${isSettingsOpen ? 'w-80 translate-x-0' : 'w-0 translate-x-full border-l-0'} overflow-y-auto`}
+        className={`bg-stone-50 border-l border-stone-200 transition-all duration-300 ease-in-out z-30 ${isSettingsOpen ? 'w-80 translate-x-0' : 'w-0 translate-x-full border-l-0'} overflow-y-auto`}
       >
-        <div className="w-80 p-6 flex flex-col gap-6">
-          <div className="flex items-center justify-between pb-4 border-b border-border/40">
-            <h2 className="text-lg font-serif font-semibold">Settings</h2>
-            <button onClick={toggleSettings} className="p-1 text-muted-foreground hover:bg-secondary rounded-sm transition-colors">
+        <div className="w-80 p-8 flex flex-col gap-8">
+          <div className="flex items-center justify-between pb-4 border-b border-stone-200">
+            <h2 className="text-xl font-bold tracking-tight text-black">Settings</h2>
+            <button onClick={toggleSettings} className="p-2 text-stone-500 hover:bg-stone-200 hover:text-black rounded-full transition-colors">
               <ChevronRight className="w-5 h-5" />
             </button>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium mb-1">URL Slug</label>
-              <input type="text" className="w-full p-2 text-sm border border-input bg-background rounded-md focus:ring-1 focus:ring-ring" placeholder="auto-generated-slug" />
+              <label className="block text-sm font-bold tracking-tight mb-2 text-black">URL Slug</label>
+              <input type="text" className="w-full px-4 py-3 text-sm border border-stone-200 bg-white rounded-xl focus:border-black outline-none" placeholder="auto-generated-slug" />
             </div>
             
             <div>
-              <label className="block text-sm font-medium mb-1">Excerpt</label>
-              <textarea rows={3} className="w-full p-2 text-sm border border-input bg-background rounded-md focus:ring-1 focus:ring-ring resize-none" placeholder="A brief summary..." />
+              <label className="block text-sm font-bold tracking-tight mb-2 text-black">Excerpt</label>
+              <textarea rows={3} className="w-full px-4 py-3 text-sm border border-stone-200 bg-white rounded-xl focus:border-black outline-none resize-none" placeholder="A brief summary..." />
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Category</label>
-              <select className="w-full p-2 text-sm border border-input bg-background rounded-md focus:ring-1 focus:ring-ring">
+              <label className="block text-sm font-bold tracking-tight mb-2 text-black">Category</label>
+              <select className="w-full px-4 py-3 text-sm border border-stone-200 bg-white rounded-xl focus:border-black outline-none">
                 <option value="">Select category...</option>
                 <option value="tech">Technology</option>
                 <option value="design">Design</option>

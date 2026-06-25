@@ -1,6 +1,7 @@
 import { verifySession } from '@/lib/auth/session';
 import { hasPermission } from '@/lib/auth/rbac';
 import Link from 'next/link';
+import { CustomCursor } from '@/components/CustomCursor';
 
 export default async function DashboardLayout({
   children,
@@ -12,34 +13,58 @@ export default async function DashboardLayout({
   const canManageUsers = session ? hasPermission(session.role, 'user:manage') : false;
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-64 bg-card border-r flex flex-col shadow-sm">
-        <div className="p-6 border-b">
-          <h2 className="font-extrabold text-2xl text-primary tracking-tight">EditorialFlow</h2>
-        </div>
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
-          <Link href="/dashboard" className="block px-3 py-2 text-sm font-medium rounded-md hover:bg-accent text-foreground">Dashboard</Link>
-          <Link href="/dashboard/articles" className="block px-3 py-2 text-sm font-medium rounded-md hover:bg-accent text-foreground">My Articles</Link>
-          <Link href="/dashboard/articles/new" className="block px-3 py-2 text-sm font-semibold rounded-md hover:bg-primary/10 text-primary">Write New</Link>
-          
-          {canReview && (
-            <div className="pt-6 mt-2">
-              <p className="px-3 text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Editorial</p>
-              <Link href="/dashboard/review" className="block px-3 py-2 text-sm font-medium rounded-md hover:bg-accent text-foreground">Review Queue</Link>
-            </div>
-          )}
+    <>
+      <CustomCursor />
+      <div className="min-h-screen bg-stone-100 text-black font-sans selection:bg-black selection:text-white flex p-4 md:p-6 gap-6">
+        
+        {/* Floating Squircle Sidebar */}
+        <aside className="w-64 bg-white rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col overflow-hidden shrink-0 hidden md:flex border border-stone-200">
+          <div className="p-8 pb-4">
+            <Link href="/" className="inline-block">
+              <div className="w-12 h-12 bg-black text-white rounded-[1rem] flex items-center justify-center hover:scale-105 transition-transform mb-8">
+                <span className="font-serif font-bold italic text-xl tracking-tighter">e.</span>
+              </div>
+            </Link>
+            <h2 className="font-bold text-lg tracking-tight mb-2">EditorialFlow</h2>
+            <p className="text-sm font-serif italic text-stone-500">{session?.role}</p>
+          </div>
 
-          {canManageUsers && (
-            <div className="pt-6 mt-2">
-              <p className="px-3 text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">Admin</p>
-              <Link href="/dashboard/users" className="block px-3 py-2 text-sm font-medium rounded-md hover:bg-accent text-foreground">Manage Users</Link>
-            </div>
-          )}
-        </nav>
-      </aside>
-      <main className="flex-1 bg-muted/20 overflow-y-auto">
-        {children}
-      </main>
-    </div>
+          <nav className="flex-1 px-4 py-4 space-y-2 overflow-y-auto">
+            <Link href="/dashboard" className="block px-4 py-3 text-sm font-bold tracking-tight rounded-[1rem] hover:bg-stone-100 transition-colors">
+              Overview
+            </Link>
+            <Link href="/dashboard/articles" className="block px-4 py-3 text-sm font-bold tracking-tight rounded-[1rem] hover:bg-stone-100 transition-colors">
+              My Articles
+            </Link>
+            <Link href="/dashboard/articles/new" className="block px-4 py-3 text-sm font-bold tracking-tight rounded-[1rem] bg-black text-white hover:bg-stone-800 transition-colors mt-4 text-center">
+              New Draft +
+            </Link>
+            
+            {canReview && (
+              <div className="pt-8">
+                <p className="px-4 text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Editorial</p>
+                <Link href="/dashboard/review" className="block px-4 py-3 text-sm font-bold tracking-tight rounded-[1rem] hover:bg-stone-100 transition-colors">
+                  Review Queue
+                </Link>
+              </div>
+            )}
+
+            {canManageUsers && (
+              <div className="pt-8">
+                <p className="px-4 text-xs font-bold text-stone-400 uppercase tracking-widest mb-3">Admin</p>
+                <Link href="/dashboard/users" className="block px-4 py-3 text-sm font-bold tracking-tight rounded-[1rem] hover:bg-stone-100 transition-colors">
+                  Manage Users
+                </Link>
+              </div>
+            )}
+          </nav>
+        </aside>
+
+        {/* Main Content Area */}
+        <main className="flex-1 bg-white rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-y-auto border border-stone-200 relative">
+          {children}
+        </main>
+      </div>
+    </>
   );
 }

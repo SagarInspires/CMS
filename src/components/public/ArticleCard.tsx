@@ -14,38 +14,36 @@ type ArticleCardProps = {
 
 export function ArticleCard({ article }: ArticleCardProps) {
   return (
-    <article className="group flex flex-col md:flex-row gap-6 md:gap-8 border-b border-border/40 pb-12 last:border-0 last:pb-0">
-      {/* Date & Category (Left Column on Desktop) */}
-      <div className="md:w-48 shrink-0 pt-1">
-        <div className="flex flex-col gap-2">
-          <time className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
-            {article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Draft'}
-          </time>
-          {article.category && (
-            <Link href={`/categories/${article.category.slug}`} className="text-xs font-bold text-primary uppercase tracking-[0.15em] hover:text-primary/80 transition-colors">
-              {article.category.name}
-            </Link>
-          )}
+    <div className="group cursor-pointer flex flex-col" data-cursor="read">
+      <Link href={`/articles/${article.slug}`} className="block w-full">
+        <div className="bg-stone-300 rounded-squircle aspect-[4/5] w-full overflow-hidden relative mb-6 transition-transform duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl">
+          <div className="absolute inset-0 flex items-center justify-center p-8 bg-stone-800">
+             <h3 className="text-white text-3xl font-serif italic text-center leading-tight">
+               "{article.title}"
+             </h3>
+          </div>
+          <div className="absolute top-6 left-6 flex gap-2">
+            {article.category && (
+              <span className="bg-white/90 backdrop-blur text-black text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+                {article.category.name}
+              </span>
+            )}
+          </div>
         </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1">
-        <Link href={`/articles/${article.slug}`} className="block focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-4 focus-visible:ring-offset-background rounded-sm">
-          <h2 className="text-2xl md:text-3xl font-serif font-bold text-foreground mb-3 group-hover:text-primary transition-colors duration-200 leading-snug">
+        <div className="px-2">
+          <h2 className="text-2xl font-bold tracking-tight text-black mb-2 leading-tight">
             {article.title}
           </h2>
-          <p className="text-muted-foreground font-serif leading-relaxed line-clamp-3 mb-6">
-            {article.excerpt || 'Read this article...'}
-          </p>
-        </Link>
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-foreground">By</span>
-          <Link href={`/authors/${article.author.name}`} className="text-sm font-medium hover:underline focus-visible:ring-2 focus-visible:ring-primary outline-none">
-            {article.author.name}
-          </Link>
+          <div className="flex justify-between items-center mt-4">
+            <span className="text-sm font-bold text-stone-500 tracking-wider uppercase">
+              By {article.author.name}
+            </span>
+            <span className="font-serif italic text-stone-400">
+              {article.publishedAt ? new Date(article.publishedAt).getFullYear() : 'Draft'}
+            </span>
+          </div>
         </div>
-      </div>
-    </article>
+      </Link>
+    </div>
   );
 }
