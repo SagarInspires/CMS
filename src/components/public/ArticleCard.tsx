@@ -16,29 +16,29 @@ export function ArticleCard({ article }: ArticleCardProps) {
   return (
     <div className="group cursor-pointer flex flex-col" data-cursor="read">
       <Link href={`/articles/${article.slug}`} className="block w-full">
-        <div className="bg-stone-300 rounded-squircle aspect-[4/5] w-full overflow-hidden relative mb-6 transition-transform duration-500 group-hover:-translate-y-2 group-hover:shadow-2xl">
-          <div className="absolute inset-0 flex items-center justify-center p-8 bg-stone-800">
-             <h3 className="text-white text-3xl font-serif italic text-center leading-tight">
+        <div className="bg-white/[0.02] backdrop-blur-xl border border-white/[0.05] rounded-[2.5rem] aspect-[4/5] w-full overflow-hidden relative mb-6 transition-all duration-500 group-hover:-translate-y-2 group-hover:shadow-[0_0_30px_rgba(255,255,255,0.03)] group-hover:bg-white/[0.04]">
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+             <h3 className="text-white/80 group-hover:text-white text-3xl font-serif italic text-center leading-tight transition-colors">
                &quot;{article.title}&quot;
              </h3>
           </div>
           <div className="absolute top-6 left-6 flex gap-2">
             {article.category && (
-              <span className="bg-white/90 backdrop-blur text-black text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+              <span className="bg-white/10 backdrop-blur border border-white/10 text-white text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider">
                 {article.category.name}
               </span>
             )}
           </div>
         </div>
         <div className="px-2">
-          <h2 className="text-2xl font-bold tracking-tight text-black mb-2 leading-tight">
+          <h2 className="text-2xl font-bold tracking-tight text-white/90 mb-2 leading-tight">
             {article.title}
           </h2>
           <div className="flex justify-between items-center mt-4">
-            <span className="text-sm font-bold text-stone-500 tracking-wider uppercase">
+            <span className="text-sm font-bold text-white/40 tracking-wider uppercase">
               By {article.author.name}
             </span>
-            <span className="font-serif italic text-stone-400">
+            <span className="font-serif italic text-white/30">
               {article.publishedAt ? new Date(article.publishedAt).getFullYear() : 'Draft'}
             </span>
           </div>
