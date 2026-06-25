@@ -8,7 +8,7 @@ COPY package.json package-lock.json* ./
 COPY prisma ./prisma
 ENV npm_config_fetch_timeout=600000
 ENV npm_config_fetch_retries=5
-RUN npm ci --ignore-scripts=false
+RUN npm ci --legacy-peer-deps --ignore-scripts=false
 
 FROM base AS builder
 WORKDIR /app
