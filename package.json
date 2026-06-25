@@ -55,6 +55,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "google-auth-library": "^10.7.0",
+    "happy-dom": "^20.10.6",
     "isomorphic-dompurify": "^3.17.0",
     "jose": "^6.2.3",
     "lucide-react": "^0.395.0",
