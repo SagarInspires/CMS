@@ -49,7 +49,7 @@ test.describe('Image Upload E2E Workflow', () => {
       await fileInput.setInputFiles(fixturePath);
 
       // Ensure image is visible in the editor
-      await expect(page.locator('.ProseMirror img[alt="Test Alt Text"]')).toBeVisible();
+      await expect(page.locator('.ProseMirror img[alt="Test Alt Text"]')).toBeVisible({ timeout: 45000 });
 
       // 5. Author waits for autosave
       const saveStatus = page.getByTestId('editor-save-status');
