@@ -15,6 +15,7 @@ class LocalStorageProvider implements StorageProvider {
   }
 
   async upload(file: File): Promise<string> {
+    await fs.mkdir(this.uploadDir, { recursive: true }).catch(() => {});
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
     

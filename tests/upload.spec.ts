@@ -45,7 +45,13 @@ test.describe('Image Upload E2E Workflow', () => {
       const fileChooser = await fileChooserPromise;
 
       const fixturePath = path.resolve(__dirname, 'fixtures/test.png');
-      await fileChooser.setFiles(fixturePath);
+      
+      const [uploadResponse] = await Promise.all([
+        page.waitForResponse(resp => resp.url().includes('/api/upload')),
+        fileChooser.setFiles(fixturePath)
+      ]);
+      
+      expect(uploadResponse.status(), `Upload API failed with status ${uploadResponse.status()}`).toBe(200);
 
       // Ensure image is visible in the editor
       await expect(page.locator('.ProseMirror img[alt="Test Alt Text"]')).toBeVisible({ timeout: 45000 });
